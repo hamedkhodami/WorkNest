@@ -35,6 +35,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # third party app
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
+
+    # apps
+    'apps.core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -143,4 +152,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #---Auth user model---------------------------------------------
 #AUTH_USER_MODEL = 'account.UserModel'
+#---------------------------------------------------------------
+
+
+#---Redis-------------------------------------------------------
+REDIS_CONFIG = {
+    'DB': int(os.getenv('REDIS_DB', 0)),  # مقدار پیش‌فرض ۰
+    'HOST': os.getenv('REDIS_HOST', 'localhost'),
+    'PORT': os.getenv('REDIS_PORT', '6379'),
+    'CHANNEL_NAME': os.getenv('REDIS_CHANNEL_NAME', 'market_price')
+}
 #---------------------------------------------------------------
