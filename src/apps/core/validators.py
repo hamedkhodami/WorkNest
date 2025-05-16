@@ -4,6 +4,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import ValidationError
 
+
 @deconstructible
 class OnlyPersianCharsValidator:
     message = _('Ensure character are persian')

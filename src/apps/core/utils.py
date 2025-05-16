@@ -13,6 +13,7 @@ from django.contrib import messages
 def random_num(size=10, chars=string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
+
 def get_time(frmt: str = '%Y-%m-%d %H:%M'):
     time = timezone.now()
     if frmt is not None:
@@ -20,21 +21,25 @@ def get_time(frmt: str = '%Y-%m-%d %H:%M'):
 
     return time
 
+
 def convert_gregorian_to_shamsi_date(gregorian_date, frmt=None):
     time = jdatetime.date.fromgregorian(date=gregorian_date)
     if frmt:
         time = time.strftime(frmt)
     return time
 
+
 def upload_file_src(instance, path):
     now = get_time('%Y-%m-%d')
     return f'files/{now}/{path}'
+
 
 def get_file_extension(file_name):
     if not file_name or not hasattr(file_name, 'file') or not file_name.file.name:
         return None
     name, extension = splitext(file_name.file.name)
     return extension
+
 
 def get_timesince_persian(time):
     time_server = timezone.now()
@@ -62,6 +67,7 @@ def get_timesince_persian(time):
 
     return output
 
+
 def validate_form(request, form):
     if form.is_valid():
         return True
@@ -78,6 +84,7 @@ def validate_form(request, form):
 
     return False
 
+
 def toast_form_errors(request, form):
     errors = form.errors.items()
     if not errors:
@@ -88,12 +95,14 @@ def toast_form_errors(request, form):
         for error in message:
             messages.error(request, error)
 
+
 def get_coded_phone_number(number):
     try:
         phone_number = str(number)
         return '+98' + phone_number[1:]
     except (TypeError, IndexError):
         return None
+
 
 def get_user_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -103,7 +112,8 @@ def get_user_ip(request):
 
     return request.META.get('REMOTE_ADDR')
 
-def c_bool(str_vlue):
+
+def convert_str_to_bool(str_vlue):
     if str_vlue == 'true':
         return True
     return False

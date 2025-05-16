@@ -43,7 +43,6 @@ class BaseModel(models.Model):
     def get_updated_at_timepast(self):
         return get_timesince_persian(self.updated_at)
 
-
 class UserModelLazy(LazyObject):
 
     def _setup(self):
