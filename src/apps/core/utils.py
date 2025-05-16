@@ -97,11 +97,12 @@ def toast_form_errors(request, form):
 
 
 def get_coded_phone_number(number):
-    try:
-        phone_number = str(number)
-        return '+98' + phone_number[1:]
-    except (TypeError, IndexError):
-        return None
+    if not number or not isinstance(number, (str, int)):
+        return None  #
+
+    phone_number = str(number).lstrip('+')
+    return f'+98{phone_number[1:]}' if phone_number.startswith('0') else f'+98{phone_number}'
+
 
 
 def get_user_ip(request):

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     #'rest_framework_simplejwt',
     #'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
+    'phonenumber_field',
 
     # apps
     'apps.core.apps.CoreConfig',
@@ -152,7 +153,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 #---Auth user model---------------------------------------------
-#AUTH_USER_MODEL = 'account.UserModel'
+AUTH_USER_MODEL = 'account.User'
 #---------------------------------------------------------------
 
 
