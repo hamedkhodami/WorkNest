@@ -38,8 +38,8 @@ INSTALLED_APPS = [
 
     # third party app
     'rest_framework',
-    #'rest_framework_simplejwt',
-    #'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'phonenumber_field',
 
@@ -152,14 +152,40 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #---------------------------------------------------------------
 
 
-#---Auth user model---------------------------------------------
+#---Auth-------------------------------------------------------
 AUTH_USER_MODEL = 'account.User'
+
+LOGIN_URL = '/u/login'
+
+LOGIN_OTP_CONFIG = {
+    'TIMEOUT': 180,  # by sec
+    'CODE_LENGTH': 6,
+    'STORE_BY': 'otp_auth_phonenumber_{}'  # redis key
+}
+
+USER_OTP_CONFIG = {
+    'TIMEOUT': 180,  # by sec
+    'CODE_LENGTH': 4,
+    'STORE_BY': 'user_otp_auth_phonenumber_{}'  # redis key
+}
+
+RESET_PASSWORD_CONFIG = {
+    'TIMEOUT': 180,  # by sec
+    'CODE_LENGTH': 4,
+    'STORE_BY': 'reset_password_phonenumber_{}'  # redis key
+}
+
+CONFIRM_PHONENUMBER_CONFIG = {
+    'TIMEOUT': 180,  # by sec
+    'CODE_LENGTH': 4,
+    'STORE_BY': 'confirm_phonenumber_{}'  # redis key
+}
 #---------------------------------------------------------------
 
 
 #---Redis-------------------------------------------------------
 REDIS_CONFIG = {
-    'DB': int(os.getenv('REDIS_DB', 0)),  # مقدار پیش‌فرض ۰
+    'DB': int(os.getenv('REDIS_DB', 0)),
     'HOST': os.getenv('REDIS_HOST', 'localhost'),
     'PORT': os.getenv('REDIS_PORT', '6379'),
     'CHANNEL_NAME': os.getenv('REDIS_CHANNEL_NAME', 'market_price')

@@ -1,4 +1,5 @@
 import secrets
+from phonenumber_field.modelfields import PhoneNumberField
 
 from django.db import models
 from django.db.models.functions import Concat
@@ -7,13 +8,15 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-
-from phonenumber_field.modelfields import PhoneNumberField
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.core.validators import OnlyPersianCharsValidator
 from apps.core.utils import random_num, get_coded_phone_number
 from apps.core.models import BaseModel
+
 from .enums import UserRoleEnum,UserGenderEnum
+from . import text
+from .auth.utils import is_melli_code
 
 
 class CustomQuerySet(models.QuerySet):
@@ -37,7 +40,7 @@ class CustomObjectsManager(BaseUserManager):
 
     def create_user(self, phone_number, password, role, email=None, **extra_fields):
         if not phone_number:
-            raise ValueError(_("Phone number is required"))
+            raise ValueError(text.required_phone_number)
         user = self.model(phone_number=phone_number, role=role, email=email, **extra_fields)
         user.set_password(password)
         user.save()
@@ -86,9 +89,14 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('Last name'), max_length=128, null=True, blank=True,
                                  default=_('No Name'), validators=[OnlyPersianCharsValidator])
     role = models.CharField(_('Role'), max_length=20, choices=Role.choices, default=Role.VIEWER)
-    is_active = models.BooleanField(_('Active'), default=True)
-    date_joined = models.DateTimeField(_('Date time field'), auto_now_add=True)
     referral_code = models.CharField(default=generate_referral, max_length=8, unique=True)
+    national_id = models.CharField(_('National id'),max_length=11, unique=True,
+                                   validators=[MaxValueValidator(11),MinValueValidator(9)])
+
+    is_phone_number_confirmed = models.BooleanField(default=False)
+    is_national_id_confirmed = models.BooleanField(default=False)
+    is_active = models.BooleanField(_('Active'), default=True)
+
 
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = []
@@ -124,6 +132,22 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     @property
     def raw_phone_number(self):
         return get_coded_phone_number(self.phone_number)
+
+    def national_id_check(self, phone_number, national_id):
+        if not is_melli_code(national_id):
+            return False
+
+        user = User.objects.filter(phone_number=phone_number, national_id=national_id).first()
+        return user is not None
+
+    def national_id_check_by_data(self, phone_number, national_id):
+        if not is_melli_code(national_id):
+            return False
+
+        if self.phone_number != phone_number or self.national_id != national_id:
+            return False
+
+        return True
 
 
 class UserProfileModel(BaseModel):

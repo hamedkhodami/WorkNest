@@ -1,8 +1,6 @@
 **TODO**
 
-core:
-core/utils
-core/serializers
+Continued Account Development
 
 -----------------------
 
