@@ -9,7 +9,7 @@ from .enums import UserRoleEnum
 
 
 class MessageSerializers(serializers.Serializer):
-    message = serializers.CharField
+    message = serializers.CharField()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -127,7 +127,151 @@ class UserCreateResponseSerializer(serializers.ModelSerializer):
         fields = ('id', 'created_at')
 
 
+class UserListSerializer(core_serializers.ListParamsSerializer, core_serializers.FilterByDateSerializer,
+                         serializers.Serializer):
 
+    BLOCK_STATUS = (
+        'all',
+        'true',
+        'false'
+    )
+
+    ROLE = (
+        'all',
+        *UserRoleEnum
+    )
+
+    ACTIVATE_STATUSES = (
+        'all',
+        'true',
+        'false'
+    )
+
+    search = serializers.CharField(required=False, help_text='search by phone_number or full name')
+    fb_role = serializers.ChoiceField(choices=ROLE, required=False, default='all',
+                                      help_text='filter by role name')
+    fb_activate_status = serializers.ChoiceField(choices=ACTIVATE_STATUSES, required=False, default='all',
+                                                 help_text='filter by active status user')
+    fb_phone_number_confirm_status = serializers.BooleanField(required=False,
+                                                             help_text='filter by phone_number confirm status')
+
+    fb_block_status = serializers.ChoiceField(BLOCK_STATUS, default='all', help_text='filter by user is blocked or not')
+
+
+class UserListDataResponseSerializer(serializers.ModelSerializer):
+    role = serializers.ChoiceField(UserRoleEnum)
+    is_blocked = serializers.SerializerMethodField()
+
+    def get_is_blocked(self, user):
+        return user.is_blocked
+
+    class Meta:
+        model = models.User
+        fields = ('id', 'created_at', 'updated_at',
+                  'first_name', 'last_name', 'phone_number', 'is_active', 'role', 'is_blocked')
+
+
+class UserListResponseSerializer(core_serializers.ListSerializer):
+    data = UserListDataResponseSerializer(many=True)
+
+
+class UserDetailSerializer(serializers.Serializer):
+    user_id = serializers.UUIDField(required=False)
+
+
+class UserDetailBasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ('id', 'email', 'role', 'first_name', 'last_name', 'phone_number')
+
+
+class UserDetailBasicByOtherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ('id', 'first_name', 'last_name')
+
+
+class UserDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ('id',)
+
+
+
+#---------------------------------------------------------------------------
+
+
+
+class UserBlockSwaggerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserBlock
+        exclude = ('user', 'admin')
+
+
+class UserBlockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserBlock
+        fields = '__all__'
+
+
+class UserUnBlockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserBlock
+        fields = ('id',)
+
+
+class UserBlockDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserBlock
+        fields = '__all__'
+
+
+
+#---------------------------------------------------------------------------
+
+
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserProfileModel
+        fields = '__all__'
+
+class UserProfileDetailSerializer(serializers.ModelSerializer):
+    profile_picture_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.UserProfileModel
+        fields = '__all__'
+
+    def get_profile_picture_url(self, obj):
+        return obj.get_profile_picture_url()
+
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserProfileModel
+        exclude = ('user',)
+
+class UserProfilePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserProfileModel
+        fields = ('image',)
+
+class UserProfilePublicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserProfileModel
+        fields = ('bio', 'image', 'city', 'degree')
+
+class UserProfileMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserProfileModel
+        fields = ('user', 'gender', 'bio')
+
+class UserProfileSkillsSerializer(serializers.ModelSerializer):
+    """مدیریت مهارت‌های کاربران در پروفایل"""
+    class Meta:
+        model = models.UserProfileModel
+        fields = ('skills',)
 
 
 

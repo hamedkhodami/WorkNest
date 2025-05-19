@@ -89,7 +89,6 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('Last name'), max_length=128, null=True, blank=True,
                                  default=_('No Name'), validators=[OnlyPersianCharsValidator])
     role = models.CharField(_('Role'), max_length=20, choices=Role.choices, default=Role.VIEWER)
-    referral_code = models.CharField(default=generate_referral, max_length=8, unique=True)
     national_id = models.CharField(_('National id'),max_length=11, unique=True,
                                    validators=[MaxValueValidator(11),MinValueValidator(9)])
 
