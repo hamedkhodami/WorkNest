@@ -8,7 +8,7 @@ from . import models, exceptions, text
 from .enums import UserRoleEnum
 
 
-class MessageSerializers(serializers.Serializer):
+class MessageSerializer(serializers.Serializer):
     message = serializers.CharField()
 
 
@@ -268,7 +268,6 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
         fields = ('user', 'gender', 'bio')
 
 class UserProfileSkillsSerializer(serializers.ModelSerializer):
-    """مدیریت مهارت‌های کاربران در پروفایل"""
     class Meta:
         model = models.UserProfileModel
         fields = ('skills',)

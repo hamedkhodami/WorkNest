@@ -8,7 +8,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 from apps.core.validators import OnlyPersianCharsValidator
 from apps.core.utils import random_num, get_coded_phone_number
@@ -90,7 +90,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
                                  default=_('No Name'), validators=[OnlyPersianCharsValidator])
     role = models.CharField(_('Role'), max_length=20, choices=Role.choices, default=Role.VIEWER)
     national_id = models.CharField(_('National id'),max_length=11, unique=True,
-                                   validators=[MaxValueValidator(11),MinValueValidator(9)])
+                                   validators=[MinLengthValidator(9),MaxLengthValidator(11)])
 
     is_phone_number_confirmed = models.BooleanField(default=False)
     is_national_id_confirmed = models.BooleanField(default=False)
@@ -105,7 +105,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _("User")
         verbose_name_plural = _("Users")
-        ordering = '-created_at',
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.phone_number} - {self.email or 'No Email'}"
