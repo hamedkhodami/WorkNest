@@ -35,3 +35,13 @@ user_is_exist = _('User already has exited')
 
 create_user_otp_sent_code = _('Register otp code sent')
 
+success_profile_list = _('Profile list was successfully restored')
+
+success_profile_update = _('Profile was successfully update')
+
+profile_not_found = _('Profile not found')
+
+access_denied = _('Access denied')
+
+user_not_block = _('User not blocked')
+

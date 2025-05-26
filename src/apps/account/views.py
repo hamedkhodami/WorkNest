@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q, F
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -51,7 +52,7 @@ class LoginBasic(SwaggerViewMixin, _TokenObtainPairView):
     swagger_title = 'Login basic by raw password'
     swagger_tags = ['Account']
     serializer_response = serializers.TokenResponseSerializer
-    permission_classes = (base_permissions.IsAuthenticated,)
+    permission_classes = (base_permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
         resp = super(LoginBasic, self).post(request, *args, **kwargs)
@@ -448,124 +449,6 @@ class UserCreate(SwaggerViewMixin, APIView):
         return Response(self.serializer_response(instance=user).data, status=status.HTTP_201_CREATED)
 
 
-class UserList(SwaggerViewMixin, mixins.ListViewMixin, mixins.FilterByDateViewMixin, APIView):
-    """
-        list user.
-    """
-    swagger_title = 'List user'
-    swagger_tags = ['Account']
-    permission_classes = (auth.IsAdmin,)
-    serializer = serializers.UserListSerializer
-    serializer_response = serializers.UserListResponseSerializer
-
-    def get(self, request):
-        return self.list(request)
-
-    def filter(self, qs):
-        qs = super().filter(qs)
-
-        params = self.query_params
-
-        search = params.get('search')
-        if search:
-            qs = qs.search(search)
-
-        fb_role = params.get('fb_role')
-        if fb_role != 'all':
-            qs = qs.filter(role=fb_role)
-
-        fb_activate_status = params.get('fb_activate_status')
-        if fb_activate_status != 'all':
-            qs = qs.filter(is_active=utils.c_bool(fb_activate_status))
-
-        fb_block_status = params.get('fb_block_status')
-        if fb_block_status != 'all':
-            qs = qs.exclude(userblock__isnull=utils.c_bool(fb_block_status))
-
-        fb_phonenumber_confirm_status = params.get('fb_phonenumber_confirm_status')
-        if fb_phonenumber_confirm_status:
-            qs = qs.filter(is_phonenumber_confirmed=fb_phonenumber_confirm_status)
-
-        fb_city = params.get('fb_city')
-        if fb_city != 'all':
-            qs = qs.filter(city=fb_city)
-
-        fb_gold_assets_greater = params.get('fb_gold_assets_greater')
-        if fb_gold_assets_greater != '-1':
-            qs = qs.filter(userwallet__amount_gold__gt=fb_gold_assets_greater)
-
-        fb_coin_assets_greater = params.get('fb_coin_assets_greater')
-        if fb_coin_assets_greater != '-1':
-            qs = qs.annotate(total_coin=F('userwallet__full_coin') + F('userwallet__half_coin') + F(
-                'userwallet__quarter_coin')).filter(total_coin__gt=fb_coin_assets_greater)
-
-        return qs
-
-    def get_queryset(self):
-        qs = User.base_objects.available_users.all()
-        return self.filter(qs)
-
-
-class UserDetail(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
-    """
-        detail user.
-    """
-    swagger_title = 'Detail user'
-    swagger_tags = ['Account']
-    serializer = serializers.UserDetailSerializer
-    serializer_response = serializers.UserDetailResponseSerializer
-    permission_classes = (auth.IsAdminOrCommonUser,)
-
-    def post(self, request, *args, **kwargs):
-        return self.detail(request)
-
-    def get_instance(self):
-        try:
-            req_user = self.request.user
-            if req_user.is_common_user:
-                return req_user
-            user_id = self.request.data.get('user_id')
-            if not user_id:
-                raise FieldIsRequired
-            return User.base_objects.available_users.get(id=user_id)
-        except (User.DoesNotExist, ValidationError):
-            raise exceptions.UserNotFound
-
-
-class UserDetailBasic(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
-    """
-        detail user basic.
-    """
-    swagger_title = 'Detail user basic'
-    swagger_tags = ['Account']
-    serializer_response = serializers.UserDetailBasicSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.detail(request)
-
-    def get_instance(self):
-        return self.request.user
-
-
-class UserDetailBasicByOtherUser(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
-    """
-        detail user basic by other user.
-    """
-    swagger_title = 'Detail user basic by other user'
-    swagger_tags = ['Account']
-    serializer_response = serializers.UserDetailBasicByOtherSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.detail(request)
-
-    def get_instance(self):
-        try:
-            national_id = self.kwargs['national_id']
-            return User.base_objects.available_users.get(national_id=national_id)
-        except (KeyError, ObjectDoesNotExist):
-            raise exceptions.UserNotFound
-
-
 class UserDelete(SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
     """
         delete user.
@@ -586,6 +469,9 @@ class UserDelete(SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
             raise exceptions.UserNotFound
 
 
+#---------------------------------------------------------------------------
+
+
 class UserBlock(SwaggerViewMixin, mixins.CreateViewMixin, APIView):
     """
         user block
@@ -595,7 +481,7 @@ class UserBlock(SwaggerViewMixin, mixins.CreateViewMixin, APIView):
     swagger_serializer = serializers.UserBlockSwaggerSerializer
     swagger_response_code = 201
     serializer = serializers.UserBlockSerializer
-    permission_classes = (auth.IsAdmin,)
+    permission_classes = (permissions.IsAdmin,)
 
     def post(self, request, *args, **kwargs):
         return self.create(request)
@@ -619,7 +505,7 @@ class UserUnBlock(SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
     swagger_title = 'Unblock user'
     swagger_tags = ['Account']
     serializer = serializers.UserUnBlockSerializer
-    permission_classes = (auth.IsAdmin,)
+    permission_classes = (permissions.IsAdmin,)
 
     def delete(self, request, *args, **kwargs):
         return self.delete_instance(request)
@@ -639,7 +525,7 @@ class UserBlockDetail(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
     """
     swagger_title = 'Block user detail'
     swagger_tags = ['Account']
-    permission_classes = (auth.IsAdmin,)
+    permission_classes = (permissions.IsAdmin,)
     serializer_response = serializers.UserBlockDetailSerializer
 
     def get(self, request, *args, **kwargs):
@@ -654,6 +540,85 @@ class UserBlockDetail(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
             raise exceptions.UserIsNotBlocked
 
 
+#---------------------------------------------------------------------------
 
+
+class ProfileListView(SwaggerViewMixin, mixins.ListViewMixin, APIView):
+    """
+        profile user list
+    """
+    permission_classes = (base_permissions.AllowAny,)
+    swagger_tags = ['Account']
+    swagger_title = 'ListProfiles'
+    serializer = serializers.UserProfileSerializer
+    serializer_response = serializers.UserProfileListResponseSerializer
+
+    def get_queryset(self):
+        return models.UserProfileModel.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        ser = self.serializer(queryset, many=True, context={'request': request})
+        response_data = {
+            "message": text.success_profile_list,
+            "results": ser.data
+        }
+        return Response(response_data, status=200)
+
+
+class ProfileDetailView(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
+    """
+        profile user  detail
+    """
+    permission_classes = (base_permissions.AllowAny,)
+    swagger_tags = ['Account']
+    swagger_title = 'ProfileDetail'
+    serializer = serializers.UserProfileDetailSerializer
+    serializer_response = serializers.UserProfileDetailResponseSerializer
+
+    def get_instance(self):
+        from django.shortcuts import get_object_or_404
+        return get_object_or_404(models.UserProfileModel, pk=self.kwargs.get('pk'))
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_instance()
+        ser = self.serializer(instance, context={'request': request})
+        response_data = {
+            "message": text.success_profile_list,
+            "data": ser.data
+        }
+        return Response(response_data, status=200)
+
+
+class ProfileUpdateView(SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
+    """
+        update profile user
+    """
+    permission_classes = (permissions.IsOwnerOrAdmin,)
+    swagger_tags = ['Profile']
+    swagger_title = 'UpdateProfile'
+    serializer = serializers.UserProfileUpdateSerializer
+    serializer_response = serializers.UserProfileUpdateResponseSerializer
+
+    def get_instance(self):
+        try:
+            return models.UserProfileModel.objects.get(pk=self.kwargs.get('pk'))
+        except models.UserProfileModel.DoesNotExist:
+            raise exceptions.ProfileNotFound()
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_instance()
+
+        if request.user.role != instance.user.role:
+            raise exceptions.AccessDenied()
+
+        ser = self.serializer(instance, data=request.data, partial=True, context={'request': request})
+        ser.is_valid(raise_exception=True)
+        ser.save()
+
+        return Response({
+            "message": text.success_profile_update,
+            "updated_data": ser.data
+        }, status=200)
 
 

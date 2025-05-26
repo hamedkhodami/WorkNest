@@ -100,3 +100,18 @@ class IsSuperOrCommonUser(BasePermissionAnyCustom):
     @classmethod
     def repr(cls):
         return 'user(super_user or common_user)'
+
+
+
+class IsOwnerOrAdmin(BasePermissionAnyCustom):
+
+
+    def has_object_permission(self, request, view, obj):
+        if not request.user.is_authenticated or request.user.is_blocked:
+            return False
+
+        if IsAdmin().has_permission(request, view):
+            return True
+
+
+        return obj.user == request.user

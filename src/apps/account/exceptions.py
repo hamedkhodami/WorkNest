@@ -50,4 +50,22 @@ class UserIsExists(APIException):
     message = text.user_is_exist
 
 
+class ProfileNotFound(APIException):
+    status_code = 404
+    default_code = 'profile_not_found'
+    message = text.profile_not_found
+
+
+class AccessDenied(APIException):
+    status_code = 403
+    default_code = 'access_denied'
+    message = text.access_denied
+
+
+class UserIsNotBlocked(APIException):
+    status_code = 400
+    default_code = 'user_not_block'
+    message = text.user_not_block
+
+
 
