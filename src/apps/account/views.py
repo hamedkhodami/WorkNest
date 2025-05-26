@@ -25,7 +25,7 @@ from ...apps.core import utils, redis_utils
 from ...apps.core.exceptions import ValidationError, OperationHasAlreadyBeenDoneError, FieldIsRequired
 
 from . import serializers, models, exceptions, auth, text, enums
-from .auth import permissions
+from .auth import permissions as per
 
 
 User = get_user_model()
@@ -419,7 +419,7 @@ class UserCreate(SwaggerViewMixin, APIView):
     swagger_title = 'Create user'
     swagger_tags = ['Account']
     swagger_response_code = 201
-    permission_classes = (permissions.IsSuperUser,)
+    permission_classes = (per.IsAdmin,)
     serializer = serializers.UserCreateSerializer
     serializer_response = serializers.UserCreateResponseSerializer
 
@@ -455,7 +455,7 @@ class UserDelete(SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
     """
     swagger_title = 'Delete user'
     swagger_tags = ['Account']
-    permission_classes = (auth.IsSuperUser,)
+    permission_classes = (per.IsAdmin,)
     serializer_response = serializers.UserDeleteSerializer
 
     def delete(self, request, *args, **kwargs):
@@ -481,7 +481,7 @@ class UserBlock(SwaggerViewMixin, mixins.CreateViewMixin, APIView):
     swagger_serializer = serializers.UserBlockSwaggerSerializer
     swagger_response_code = 201
     serializer = serializers.UserBlockSerializer
-    permission_classes = (permissions.IsAdmin,)
+    permission_classes = (per.IsAdmin,)
 
     def post(self, request, *args, **kwargs):
         return self.create(request)
@@ -505,7 +505,7 @@ class UserUnBlock(SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
     swagger_title = 'Unblock user'
     swagger_tags = ['Account']
     serializer = serializers.UserUnBlockSerializer
-    permission_classes = (permissions.IsAdmin,)
+    permission_classes = (per.IsAdmin,)
 
     def delete(self, request, *args, **kwargs):
         return self.delete_instance(request)
@@ -525,7 +525,7 @@ class UserBlockDetail(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
     """
     swagger_title = 'Block user detail'
     swagger_tags = ['Account']
-    permission_classes = (permissions.IsAdmin,)
+    permission_classes = (per.IsAdmin,)
     serializer_response = serializers.UserBlockDetailSerializer
 
     def get(self, request, *args, **kwargs):
@@ -594,7 +594,7 @@ class ProfileUpdateView(SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
     """
         update profile user
     """
-    permission_classes = (permissions.IsOwnerOrAdmin,)
+    permission_classes = (per.IsOwnerOrAdmin,)
     swagger_tags = ['Profile']
     swagger_title = 'UpdateProfile'
     serializer = serializers.UserProfileUpdateSerializer

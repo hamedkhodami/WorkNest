@@ -1,17 +1,14 @@
 from rest_framework import permissions as _permissions
-
+from ..enums import UserRoleEnum
 
 class BasePermissionCustom(_permissions.BasePermission):
     user_role = ''
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     def has_permission(self, request, view):
         user = request.user
         if not user.is_authenticated or user.is_blocked:
             return False
-        return request.user and request.user.role == self.user_role
+        return user.role == self.user_role
 
     @classmethod
     def get_role(cls):
@@ -23,19 +20,17 @@ class BasePermissionCustom(_permissions.BasePermission):
 
     @classmethod
     def repr(cls):
-        return cls.get_role()
+        return cls.user_role
 
 
 class BasePermissionAnyCustom(BasePermissionCustom):
-    # TODO: better to change check multiple role structure
-    """
-        If the user has any of the permissions can have access
-    """
     permission_classes_any = None
 
     def has_permission(self, request, view):
+        if not request.user.is_authenticated or request.user.is_blocked:
+            return False
         allowed_roles = {perm.get_role() for perm in self.get_permissions_any()}
-        return request.user.role in allowed_roles if request.user.is_authenticated else False
+        return request.user.role in allowed_roles
 
     @classmethod
     def get_permissions_any(cls):
@@ -43,75 +38,69 @@ class BasePermissionAnyCustom(BasePermissionCustom):
 
     @classmethod
     def get_roles(cls):
-        return [perm.get_role() for perm in cls.get_permissions_any()]
+        return [perm.get_role() for perm in cls.permission_classes_any]
 
 
-class IsDistributorUser(BasePermissionCustom):
-    user_role = 'distributor_user'
+#---------------------------------------------------------------------------
 
 
-class IsCommonUser(BasePermissionCustom):
-    user_role = 'common_user'
+class IsAdmin(BasePermissionCustom):
+    user_role = UserRoleEnum.ADMIN
 
 
-class IsSuperUser(BasePermissionCustom):
-    user_role = 'super_user'
+class IsProjectAdmin(BasePermissionCustom):
+    user_role = UserRoleEnum.PROJECT_ADMIN
 
 
-class IsOperator(BasePermissionCustom):
-    user_role = 'operator_user'
+class IsProjectMember(BasePermissionCustom):
+    user_role = UserRoleEnum.PROJECT_MEMBER
 
 
-class IsAdmin(BasePermissionAnyCustom):
-    permission_classes_any = [IsSuperUser, IsOperator]
-
-    @classmethod
-    def repr(cls):
-        return 'admin user(super_user or operator_user)'
+class IsViewer(BasePermissionCustom):
+    user_role = UserRoleEnum.VIEWER
 
 
-class IsAdminOrCommonUser(BasePermissionAnyCustom):
-    permission_classes_any = [IsSuperUser, IsOperator, IsCommonUser]
+#---------------------------------------------------------------------------
+
+class IsAdminOrProjectAdmin(BasePermissionAnyCustom):
+    permission_classes_any = [IsAdmin, IsProjectAdmin]
 
     @classmethod
     def repr(cls):
-        return 'user(super_user or operator_user or common_user)'
+        return 'Admin or Project Admin'
 
 
-class IsAdminOrDistributorUser(BasePermissionAnyCustom):
-    permission_classes_any = [IsSuperUser, IsOperator, IsDistributorUser]
-
-    @classmethod
-    def repr(cls):
-        return 'user(super_user or operator_user or distributor_user)'
-
-
-class IsSuperOrDistributorUser(BasePermissionAnyCustom):
-    permission_classes_any = [IsSuperUser, IsDistributorUser]
+class IsTeamUser(BasePermissionAnyCustom):
+    permission_classes_any = [IsProjectAdmin, IsProjectMember]
 
     @classmethod
     def repr(cls):
-        return 'user(super_user or distributor_user)'
+        return 'Team user (project_admin or project_member)'
 
 
-class IsSuperOrCommonUser(BasePermissionAnyCustom):
-    permission_classes_any = [IsSuperUser, IsCommonUser]
+class IsAdminOrViewer(BasePermissionAnyCustom):
+    permission_classes_any = [IsAdmin, IsViewer]
 
     @classmethod
     def repr(cls):
-        return 'user(super_user or common_user)'
+        return 'Admin or Viewer'
 
 
+class IsAdminOrMember(BasePermissionAnyCustom):
+    permission_classes_any = [IsAdmin, IsProjectMember]
+
+    @classmethod
+    def repr(cls):
+        return 'Admin or Project Member'
+
+#---------------------------------------------------------------------------
 
 class IsOwnerOrAdmin(BasePermissionAnyCustom):
-
+    permission_classes_any = [IsAdmin, IsProjectAdmin]
 
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated or request.user.is_blocked:
             return False
-
-        if IsAdmin().has_permission(request, view):
+        if IsAdminOrProjectAdmin().has_permission(request, view):
             return True
-
-
-        return obj.user == request.user
+        return getattr(obj, 'user', None) == request.user
