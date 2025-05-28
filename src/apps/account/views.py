@@ -1,9 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Q, F
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -19,12 +17,12 @@ from rest_framework_simplejwt.views import (
 
 from drf_yasg.utils import swagger_auto_schema
 
-from ...apps.core.views import mixins
-from ...apps.core.swagger.mixins import SwaggerViewMixin
-from ...apps.core import utils, redis_utils
-from ...apps.core.exceptions import ValidationError, OperationHasAlreadyBeenDoneError, FieldIsRequired
+from src import mixins
+from src import SwaggerViewMixin
+from src import utils, redis_utils
+from src import ValidationError, OperationHasAlreadyBeenDoneError
 
-from . import serializers, models, exceptions, auth, text, enums
+from . import serializers, models, exceptions, text
 from .auth import permissions as per
 
 

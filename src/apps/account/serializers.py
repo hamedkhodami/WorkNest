@@ -8,6 +8,7 @@ from . import models, exceptions, text
 from .enums import UserRoleEnum
 
 
+
 class MessageSerializer(serializers.Serializer):
     message = serializers.CharField()
 
