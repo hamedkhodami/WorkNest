@@ -17,10 +17,10 @@ from rest_framework_simplejwt.views import (
 
 from drf_yasg.utils import swagger_auto_schema
 
-from src import mixins
-from src import SwaggerViewMixin
-from src import utils, redis_utils
-from src import ValidationError, OperationHasAlreadyBeenDoneError
+from apps.core.views import mixins
+from apps.core.swagger import mixins as ms
+from apps.core import utils, redis_utils
+from apps.core.exceptions import ValidationError, OperationHasAlreadyBeenDoneError
 
 from . import serializers, models, exceptions, text
 from .auth import permissions as per
@@ -30,7 +30,7 @@ User = get_user_model()
 
 
 
-class TokenRefresh(SwaggerViewMixin, _TokenRefreshView):
+class TokenRefresh(ms.SwaggerViewMixin, _TokenRefreshView):
     """
         get access token by refresh token(update login)
     """
@@ -43,7 +43,7 @@ class TokenRefresh(SwaggerViewMixin, _TokenRefreshView):
         return super(TokenRefresh, self).post(request, *args, **kwargs)
 
 
-class LoginBasic(SwaggerViewMixin, _TokenObtainPairView):
+class LoginBasic(ms.SwaggerViewMixin, _TokenObtainPairView):
     """
         Get token pair (access & refresh tokens)
     """
@@ -57,7 +57,7 @@ class LoginBasic(SwaggerViewMixin, _TokenObtainPairView):
 
         phone_number = request.data.get('phone_number')
         try:
-            user = get_user_model().objects.get(phonenumber=phone_number)
+            user = get_user_model().objects.get(phone_number=phone_number)
             resp.data['user_role'] = user.role
         except get_user_model().DoesNotExist:
             resp.data['user_role'] = None
@@ -143,7 +143,7 @@ class LoginOTP(APIView):
         return Response(serializers.TokenResponseSerializer(response_data).data)
 
 
-class Logout(SwaggerViewMixin, APIView):
+class Logout(ms.SwaggerViewMixin, APIView):
     """
         need to destroy access token from client side
     """
@@ -164,11 +164,11 @@ class Logout(SwaggerViewMixin, APIView):
         return Response(serializers.MessageSerializer({'message': 'bye...'}).data)
 
 
-class Register(SwaggerViewMixin, APIView):
+class Register(ms.SwaggerViewMixin, APIView):
     """
         Register user and return user tokens
     """
-    swagger_tags = 'Register user'
+    swagger_title = 'Register user'
     swagger_tags = ['Account']
     swagger_response_code = 201
     permission_classes = (base_permissions.AllowAny,)
@@ -207,7 +207,7 @@ class Register(SwaggerViewMixin, APIView):
         return Response(self.serializer_response(tokens_dict).data, status=status.HTTP_201_CREATED)
 
 
-class ResetPassword(SwaggerViewMixin, APIView):
+class ResetPassword(ms.SwaggerViewMixin, APIView):
     """
         reset password
         create and send reset code
@@ -247,7 +247,7 @@ class ResetPassword(SwaggerViewMixin, APIView):
         return Response(self.serializer_response(res).data)
 
 
-class ResetPasswordCheckAndSet(SwaggerViewMixin, APIView):
+class ResetPasswordCheckAndSet(ms.SwaggerViewMixin, APIView):
     """
         reset password
         check code and set new password
@@ -371,7 +371,7 @@ class ConfirmPhoneNumber(APIView):
         return Response(self.serializer_response(res).data)
 
 
-class UserSendOTP(SwaggerViewMixin, APIView):
+class UserSendOTP(ms.SwaggerViewMixin, APIView):
     """
         send otp code user
     """
@@ -410,7 +410,7 @@ class UserSendOTP(SwaggerViewMixin, APIView):
         return Response(self.serializer_response(res).data)
 
 
-class UserCreate(SwaggerViewMixin, APIView):
+class UserCreate(ms.SwaggerViewMixin, APIView):
     """
         create user.
     """
@@ -447,7 +447,7 @@ class UserCreate(SwaggerViewMixin, APIView):
         return Response(self.serializer_response(instance=user).data, status=status.HTTP_201_CREATED)
 
 
-class UserDelete(SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
+class UserDelete(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
     """
         delete user.
     """
@@ -470,7 +470,7 @@ class UserDelete(SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
 #---------------------------------------------------------------------------
 
 
-class UserBlock(SwaggerViewMixin, mixins.CreateViewMixin, APIView):
+class UserBlock(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
     """
         user block
     """
@@ -496,7 +496,7 @@ class UserBlock(SwaggerViewMixin, mixins.CreateViewMixin, APIView):
         }
 
 
-class UserUnBlock(SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
+class UserUnBlock(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
     """
         unblock user
     """
@@ -517,7 +517,7 @@ class UserUnBlock(SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
             raise exceptions.UserIsNotBlocked
 
 
-class UserBlockDetail(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
+class UserBlockDetail(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
     """
         user block detail
     """
@@ -541,7 +541,7 @@ class UserBlockDetail(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
 #---------------------------------------------------------------------------
 
 
-class ProfileListView(SwaggerViewMixin, mixins.ListViewMixin, APIView):
+class ProfileListView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
     """
         profile user list
     """
@@ -564,7 +564,7 @@ class ProfileListView(SwaggerViewMixin, mixins.ListViewMixin, APIView):
         return Response(response_data, status=200)
 
 
-class ProfileDetailView(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
+class ProfileDetailView(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
     """
         profile user  detail
     """
@@ -588,7 +588,7 @@ class ProfileDetailView(SwaggerViewMixin, mixins.DetailViewMixin, APIView):
         return Response(response_data, status=200)
 
 
-class ProfileUpdateView(SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
+class ProfileUpdateView(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
     """
         update profile user
     """

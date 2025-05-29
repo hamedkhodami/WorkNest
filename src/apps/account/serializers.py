@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from phonenumber_field.serializerfields import PhoneNumberField
 
-from .exceptions import NationalIdNotMatch
 from apps.core import serializers as core_serializers
 from .auth import utils
 from . import models, exceptions, text

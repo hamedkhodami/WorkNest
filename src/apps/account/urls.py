@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 
 app_name = 'apps.account'
+
+
 urlpatterns = [
     path('token/basic', views.LoginBasic.as_view(), name='token_obtain_pair_basic'),
     path('token/otp', views.LoginOTP.as_view(), name='token_obtain_pair_otp'),

@@ -1,6 +1,7 @@
 import factory
 from apps.account.models import User
 
+
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User

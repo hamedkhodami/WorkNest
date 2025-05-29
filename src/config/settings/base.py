@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from django.utils.translation import gettext_lazy as _
+from datetime import timedelta
 #-----------------------------------------------------------------
 
 
@@ -193,4 +194,57 @@ REDIS_CONFIG = {
 #---------------------------------------------------------------
 
 
+#---API---------------------------------------------------------
+API_VERSION = 'v1'
+API_URL_LABEL = 'api'
+#---------------------------------------------------------------
 
+
+#---SWAGGER-----------------------------------------------------
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {"type": "JWT", "name": "authorization", "in": "header"},
+    },
+}
+#---------------------------------------------------------------
+
+
+#---REST_FRAMEWORK----------------------------------------------
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'apps.core.exceptions.custom_exception_handler',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'apps.account.auth.authentication.BaseJWTAuthentication',
+    ],
+}
+#---------------------------------------------------------------
+
+
+#---JWT---------------------------------------------------------
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=40),  # TODO: must change in production(just use in development)
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=20),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True
+}
+#---------------------------------------------------------------
+
+
+#---CACHES------------------------------------------------------------
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+    }
+}
+#---------------------------------------------------------------
