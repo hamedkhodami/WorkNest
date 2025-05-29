@@ -175,7 +175,7 @@ class UserProfileModel(BaseModel):
 
 
 class UserBlock(BaseModel):
-    user = models.OneToOneField('User', on_delete=models.CASCADE, related_name='blocked_user')
+    user = models.OneToOneField('User', on_delete=models.CASCADE, related_name='userblock')
     admin = models.ForeignKey('User', on_delete=models.SET_NULL, null=True, related_name='user_blocked_by_admin')
     note = models.TextField(null=True, blank=True)
 
