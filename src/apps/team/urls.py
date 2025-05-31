@@ -6,5 +6,5 @@ app_name = 'apps.team'
 
 
 urlpatterns = [
-
+    path('create/', views.TeamCreateView.as_view(), name='team_create'),
 ]

@@ -2,6 +2,7 @@ import factory
 from apps.team.models import TeamModel
 
 
+
 class TeamFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = TeamModel
