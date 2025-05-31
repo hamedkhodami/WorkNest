@@ -1,0 +1,262 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-30 15:49+0330\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: .\apps\account\enums.py:7
+msgid "Admin"
+msgstr "ادمین"
+
+#: .\apps\account\enums.py:8
+msgid "Project admin"
+msgstr "ادمین پروژه"
+
+#: .\apps\account\enums.py:9
+msgid "Project member"
+msgstr "عضو پروژه"
+
+#: .\apps\account\enums.py:10
+msgid "Viewer"
+msgstr "مشاهده کننده"
+
+#: .\apps\account\enums.py:15
+msgid "Male"
+msgstr "مرد"
+
+#: .\apps\account\enums.py:16
+msgid "Female"
+msgstr "زن"
+
+#: .\apps\account\models.py:85
+msgid "Phone number"
+msgstr "شماره تلفن"
+
+#: .\apps\account\models.py:86
+msgid "Email"
+msgstr "ایمیل"
+
+#: .\apps\account\models.py:87
+msgid "First name"
+msgstr "نام"
+
+#: .\apps\account\models.py:88 .\apps\account\models.py:90
+#: .\apps\account\models.py:114
+msgid "No Name"
+msgstr "بدون نام"
+
+#: .\apps\account\models.py:89
+msgid "Last name"
+msgstr "نام خانوادگی"
+
+#: .\apps\account\models.py:91
+msgid "Role"
+msgstr "نقش"
+
+#: .\apps\account\models.py:92
+msgid "National id"
+msgstr "شناسه ملی"
+
+#: .\apps\account\models.py:97
+msgid "Active"
+msgstr "فعال"
+
+#: .\apps\account\models.py:106 .\apps\account\models.py:156
+msgid "User"
+msgstr "کاربر"
+
+#: .\apps\account\models.py:107
+msgid "Users"
+msgstr "کاربران"
+
+#: .\apps\account\models.py:157
+msgid "Gender"
+msgstr "جنسیت"
+
+#: .\apps\account\models.py:158
+msgid "Bio"
+msgstr "بیوگرافی"
+
+#: .\apps\account\models.py:159
+msgid "Picture"
+msgstr "تصویر"
+
+#: .\apps\account\models.py:160
+msgid "Degree"
+msgstr "مدرک"
+
+#: .\apps\account\models.py:161
+msgid "City"
+msgstr "شهر"
+
+#: .\apps\account\models.py:162
+msgid "Skills"
+msgstr "مهارت ها"
+
+#: .\apps\account\models.py:165
+msgid "User profile"
+msgstr "پروفایل کاربر"
+
+#: .\apps\account\models.py:166
+msgid "Users profile"
+msgstr "پروفایل کاربران"
+
+#: .\apps\account\models.py:183
+msgid "Blocked User"
+msgstr "کاربر بلاک شده"
+
+#: .\apps\account\models.py:184
+msgid "Blocked Users"
+msgstr "کاربران بلاک شده"
+
+#: .\apps\account\text.py:4
+msgid "User in block list"
+msgstr "کاربر در لیست بلاک قرار دارد"
+
+#: .\apps\account\text.py:6
+msgid "Phone number is required"
+msgstr "شماره تلفن خود را وارد کنید"
+
+#: .\apps\account\text.py:8
+msgid "National id is not valid"
+msgstr "شناسه ملی نامعتبر است"
+
+#: .\apps\account\text.py:10
+msgid "Phone number is not valid"
+msgstr "شماره تلفن نامعتبر است"
+
+#: .\apps\account\text.py:12
+msgid "National id not match"
+msgstr "شناسه ملی مطابقت ندارد"
+
+#: .\apps\account\text.py:14
+msgid "Phone number is not match with national id"
+msgstr ""
+
+#: .\apps\account\text.py:16
+msgid "Role is not valid"
+msgstr "شماره تلفن با شناسه ملی مطابقت ندارد"
+
+#: .\apps\account\text.py:18
+msgid "User not found"
+msgstr "کاربر یافت نشد"
+
+#: .\apps\account\text.py:20
+msgid "Code already has been send"
+msgstr "کد قبلاً ارسال شده است"
+
+#: .\apps\account\text.py:22
+msgid "OTP code sent"
+msgstr "رمز عبور یکبار ارسال شد"
+
+#: .\apps\account\text.py:24
+msgid "The code is wrong or timeout"
+msgstr "کد اشتباه است یا زمان آن تمام شده است"
+
+#: .\apps\account\text.py:26
+msgid "Password recovery code sent."
+msgstr "کد بازیابی رمز عبور ارسال شد"
+
+#: .\apps\account\text.py:28
+msgid "Your password has been successfully changed"
+msgstr "رمز عبور شما با موفقیت تغییر یافت"
+
+#: .\apps\account\text.py:30
+msgid "Confirm code sent"
+msgstr "کد ارسال شده را تایید کنید"
+
+#: .\apps\account\text.py:32
+msgid "Your phone number confirmed successfully"
+msgstr "شماره تلفن شما با موفقیت تایید شد"
+
+#: .\apps\account\text.py:34
+msgid "User already has exited"
+msgstr "کاربر قبلاً خارج شده است"
+
+#: .\apps\account\text.py:36
+msgid "Register otp code sent"
+msgstr "رمز عبور یکبار ارسال شده را ثبت کنید"
+
+#: .\apps\account\text.py:38
+msgid "Profile list was successfully restored"
+msgstr "لیست پروفایل با موفقیت بازیابی شد"
+
+#: .\apps\account\text.py:40
+msgid "Profile was successfully update"
+msgstr "پروفایل با موفقیت به‌روزرسانی شد"
+
+#: .\apps\account\text.py:42
+msgid "Profile not found"
+msgstr "پروفایل یافت نشد"
+
+#: .\apps\account\text.py:44
+msgid "Access denied"
+msgstr "دسترسی رد شد"
+
+#: .\apps\account\text.py:46
+msgid "User not blocked"
+msgstr "کاربر مسدود نشده است"
+
+#: .\apps\core\exceptions.py:39
+msgid "Validation error"
+msgstr "خطای اعتبارسنجی"
+
+#: .\apps\core\exceptions.py:44
+msgid "The operation has already been done"
+msgstr "عملیات قبلاً انجام شده است"
+
+#: .\apps\core\exceptions.py:49
+msgid "Field is required"
+msgstr "فیلد الزامی است"
+
+#: .\apps\core\exceptions.py:54
+msgid "Field is not valid"
+msgstr "فیلد معتبر نیست"
+
+#: .\apps\core\exceptions.py:59
+msgid "App section disabled"
+msgstr "بخش برنامه غیرفعال شد"
+
+#: .\apps\core\utils.py:60
+#, python-format
+msgid "%(days)s days ago."
+msgstr "%(days)s روز پیش."
+
+#: .\apps\core\utils.py:62
+#, python-format
+msgid "%(hours)s hours ago."
+msgstr "%(hours)s ساعت پیش."
+
+#: .\apps\core\utils.py:64
+#, python-format
+msgid "%(minutes)s minutes ago."
+msgstr "%(minutes)s دقیقه پیش."
+
+#: .\apps\core\utils.py:66
+msgid "Moments ago"
+msgstr "لحظاتی پیش"
+
+#: .\apps\core\utils.py:78 .\apps\core\utils.py:91
+msgid "Entered data is not correct."
+msgstr "اطلاعات وارد شده صحیح نیست."
+
+#: .\apps\core\validators.py:10
+msgid "Ensure character are persian"
+msgstr "مطمئن شوید که کاراکترها فارسی هستند"
+
+#: .\config\settings\base.py:108
+msgid "Persian"
+msgstr "فارسی"

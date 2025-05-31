@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # apps
     'apps.core.apps.CoreConfig',
     'apps.account.apps.AccountConfig',
+    'apps.team.apps.TeamConfig',
 ]
 
 MIDDLEWARE = [
@@ -109,7 +110,7 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = [
-    BASE_DIR / os.getenv('LOCALE_PATHS', 'locale'),
+    os.path.join(BASE_DIR, 'locale'),
 ]
 
 LANGUAGE_CODE = 'fa'
