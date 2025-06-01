@@ -1,6 +1,6 @@
 import factory
-from apps.team.models import TeamModel
-
+from apps.team.models import TeamModel, TeamMembership
+from apps.account.tests.factories import UserFactory
 
 
 class TeamFactory(factory.django.DjangoModelFactory):
@@ -11,3 +11,12 @@ class TeamFactory(factory.django.DjangoModelFactory):
     description = factory.Faker("paragraph")
     is_public = factory.Faker("boolean")
     is_locked = factory.Faker("boolean")
+
+
+class TeamMembershipFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = TeamMembership
+
+    user = factory.SubFactory(UserFactory)
+    team = factory.SubFactory(TeamFactory)
+    responsible = factory.Faker("job")

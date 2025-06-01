@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework import  generics, permissions, status
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions as base_permissions
@@ -36,3 +36,22 @@ class TeamCreateView(ms.SwaggerViewMixin, APIView):
             return Response(response_ser.data, status=status.HTTP_201_CREATED)
 
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UsersTeamsView(ms.SwaggerViewMixin, APIView):
+    """
+        view to display the teams the user is a member of
+    """
+    swagger_title = 'Users Team'
+    swagger_tags = ['Team']
+    serializer_class = serializers.UsersSerializers
+    permission_classes = [base_permissions.IsAuthenticated]
+
+    def get(self, request):
+        serializer = self.serializer_class(instance=request.user, context={"request": request})
+        return Response(serializer.data, status=200)
+
+
+
+
+

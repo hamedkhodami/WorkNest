@@ -32,7 +32,7 @@ class TeamCreateSerializers(serializers.ModelSerializer):
 
         try:
             team = models.TeamModel.objects.create(**validated_data)
-        except Exception as e:
+        except Exception:
             raise exceptions.NotCreateTeam
 
         models.TeamMembership.objects.create(user=request_user, team=team, responsible=_('Owner'))
@@ -50,5 +50,22 @@ class TeamCreateSerializersResponse(serializers.ModelSerializer):
     class Meta:
         model = models.TeamModel
         fields = ['name', 'description']
+
+
+class UsersSerializers(serializers.Serializer):
+    """
+        Serializer to display the teams the user is a member of
+    """
+
+    teams = serializers.SerializerMethodField()
+
+    def get_teams(self, obj):
+        user = self.context['request'].user
+        memberships = models.TeamMembership.objects.filter(user=user).select_related('team')
+        return [
+            {"team_id": membership.team.id, "team_name": membership.team.name}
+            for membership in memberships
+        ] if memberships.exists() else []
+
 
 

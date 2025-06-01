@@ -15,6 +15,7 @@ class ViewMixin:
             return self.serializer_response
         return self.serializer
 
+
 class CreateViewMixin(ViewMixin):
     validated_data = None
     obj = None
