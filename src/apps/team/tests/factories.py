@@ -9,7 +9,6 @@ class TeamFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker("company")
     description = factory.Faker("paragraph")
-    is_public = factory.Faker("boolean")
     is_locked = factory.Faker("boolean")
 
 

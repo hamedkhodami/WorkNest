@@ -1,12 +1,10 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from . import models, text, exceptions, enums
 from apps.account.enums import UserRoleEnum
 
 
-User = get_user_model()
 STATUS_CHOICES = enums.JoinTeamStatusEnum
 Role = UserRoleEnum
 
@@ -105,8 +103,40 @@ class TeamUpdateResponseSerializers(serializers.Serializer):
     """
         update team response
     """
-    massage = serializers.CharField()
+    message = serializers.CharField()
     update_data = TeamUpdateSerializers()
+
+
+class RequestJoinTeamSerializers(serializers.ModelSerializer):
+    """
+        serializer join team request
+    """
+    class Meta:
+        model = models.TeamJoinRequest
+        fields = ['team', 'user']
+
+    def validated_team(self, value):
+        if value.is_locked == True:
+            raise serializers.ValidationError(text.team_locked)
+        return value
+
+    def validate(self, data):
+        user = data["user"]
+        team = data["team"]
+
+        if models.TeamJoinRequest.objects.filter(user=user, team=team, status=enums.JoinTeamStatusEnum.PENDING).exists():
+            raise serializers.ValidationError(text.team_request_pending)
+
+        return data
+
+
+class RequestJoinTeamResponseSerializers(serializers.Serializer):
+    """Join team request response"""
+    message = serializers.CharField()
+
+
+
+
 
 
 

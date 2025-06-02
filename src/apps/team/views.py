@@ -10,7 +10,7 @@ from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
 from apps.account.auth import permissions as per
 
-from . import models, exceptions, serializers
+from . import models, exceptions, serializers, text
 
 
 User = get_user_model()
@@ -86,12 +86,10 @@ class TeamUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
     serializer = serializers.TeamUpdateSerializers
     serializer_response = serializers.TeamUpdateResponseSerializers
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request)
-
     def get_instance(self):
         team_id = self.kwargs.get('team_id')
         team = models.TeamModel.objects.filter(id=team_id).first()
+
         if not team:
             raise exceptions.NotFoundTeam
 
@@ -99,10 +97,40 @@ class TeamUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
 
         return team
 
+    def put(self, request, *args, **kwargs):
+
+        instance = self.get_instance()
+        ser = self.serializer(instance, data=request.data, partial=True, context={'request': request})
+        ser.is_valid(raise_exception=True)
+        ser.save()
+
+        return Response({
+            "message": text.success_team_update,
+            "updated_data": ser.data
+        }, status=200)
 
 
+class JoinTeamView(ms.SwaggerViewMixin, APIView):
+    """
+        view join team request
+    """
+    swagger_title = 'Request join'
+    swagger_tags = ['Team']
+    serializer = serializers.RequestJoinTeamSerializers
+    serializer_response = serializers.RequestJoinTeamResponseSerializers
+    permission_classes = [permissions.IsAuthenticated]
 
+    def post(self, request):
+        ser = self.serializer(data=request.data)
+        ser.is_valid(raise_exception=True)
 
+        team = ser.validated_data["team"]
+        if team.is_locked:
+            return Response({"message": text.team_locked}, status=status.HTTP_403_FORBIDDEN)
 
+        ser.save()
 
-
+        response_serializer = self.serializer_response({
+            "message": text.success_team_request,
+        })
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)

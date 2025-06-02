@@ -151,8 +151,6 @@ class DetailViewMixin(ViewMixin):
         pass
 
 
-
-
 class CreateOrUpdateViewMixin(CreateViewMixin, UpdateViewMixin):
     pass
 
