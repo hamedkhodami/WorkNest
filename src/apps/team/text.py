@@ -6,3 +6,4 @@ permission_denied = _('You do not have permission to perform this action')
 
 not_create_team = _('Failed to create the team, please try again later')
 
+not_found_team = _('Team not found')

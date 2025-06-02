@@ -13,3 +13,4 @@
 
 ## Feature: 
 - [ ] Implement signal to create TeamMembership after invitation or join request is accepted
+- [ ] Improve TeamCreateView and UsersTeamsView by mixins

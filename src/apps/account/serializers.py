@@ -198,12 +198,6 @@ class UserProfileDetailSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
 
 
-        if not request or not request.user.is_authenticated:
-            data.pop('email', None)
-            data.pop('phone_number', None)
-        return data
-
-
 class UserProfileDetailResponseSerializer(serializers.Serializer):
     message = serializers.CharField()
     data = UserProfileDetailSerializer()

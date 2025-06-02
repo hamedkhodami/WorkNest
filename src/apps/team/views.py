@@ -8,6 +8,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
+from apps.account.auth import permissions as per
 
 from . import models, exceptions, serializers
 
@@ -15,6 +16,7 @@ from . import models, exceptions, serializers
 User = get_user_model()
 
 
+# TODO: improve by mixins
 class TeamCreateView(ms.SwaggerViewMixin, APIView):
     """
         team creation view
@@ -38,6 +40,7 @@ class TeamCreateView(ms.SwaggerViewMixin, APIView):
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# TODO: improve by mixins
 class UsersTeamsView(ms.SwaggerViewMixin, APIView):
     """
         view to display the teams the user is a member of
@@ -50,6 +53,54 @@ class UsersTeamsView(ms.SwaggerViewMixin, APIView):
     def get(self, request):
         serializer = self.serializer_class(instance=request.user, context={"request": request})
         return Response(serializer.data, status=200)
+
+
+class TeamDetailView(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
+    """
+        detail team view
+    """
+    swagger_title = 'Details Team'
+    swagger_tags = ['Team']
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_response = serializers.DetailTeamSerializers
+
+
+    def get(self, request, *args, **kwargs):
+        return self.detail(request)
+
+    def get_instance(self):
+        team_id = self.kwargs.get('team_id')
+        team = models.TeamModel.objects.filter(id=team_id).first()
+        if not team:
+            raise exceptions.NotFoundTeam()
+        return team
+
+
+class TeamUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
+    """
+        update team view
+    """
+    swagger_title = 'Update Team'
+    swagger_tags = ['Team']
+    permission_classes = (per.IsAdminOrProjectAdmin,)
+    serializer = serializers.TeamUpdateSerializers
+    serializer_response = serializers.TeamUpdateResponseSerializers
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request)
+
+    def get_instance(self):
+        team_id = self.kwargs.get('team_id')
+        team = models.TeamModel.objects.filter(id=team_id).first()
+        if not team:
+            raise exceptions.NotFoundTeam
+
+        self.check_permissions(self.request)
+
+        return team
+
+
+
 
 
 

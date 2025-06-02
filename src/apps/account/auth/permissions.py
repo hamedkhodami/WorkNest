@@ -8,7 +8,7 @@ class BasePermissionCustom(_permissions.BasePermission):
         user = request.user
         if not user.is_authenticated or user.is_blocked:
             return False
-        return user.role == self.user_role
+        return user.role == self.get_roles()
 
     @classmethod
     def get_role(cls):
@@ -28,6 +28,8 @@ class BasePermissionAnyCustom(BasePermissionCustom):
 
     def has_permission(self, request, view):
         if not request.user.is_authenticated or request.user.is_blocked:
+            return False
+        if not self.permission_classes_any:
             return False
         allowed_roles = {perm.get_role() for perm in self.get_permissions_any()}
         return request.user.role in allowed_roles
@@ -95,6 +97,7 @@ class IsAdminOrMember(BasePermissionAnyCustom):
 
 #---------------------------------------------------------------------------
 
+
 class IsOwnerOrAdmin(BasePermissionAnyCustom):
     permission_classes_any = [IsAdmin, IsProjectAdmin]
 
@@ -103,4 +106,4 @@ class IsOwnerOrAdmin(BasePermissionAnyCustom):
             return False
         if IsAdminOrProjectAdmin().has_permission(request, view):
             return True
-        return getattr(obj, 'user', None) == request.user
+        return obj.user == request.user
