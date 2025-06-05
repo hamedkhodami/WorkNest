@@ -24,16 +24,12 @@ class TeamCreateSerializers(serializers.ModelSerializer):
 
     def create(self, validated_data):
         request_user = self.context['request'].user
+        validated_data['created_by'] = request_user
 
         try:
             team = models.TeamModel.objects.create(**validated_data)
         except Exception:
             raise exceptions.NotCreateTeam
-
-        models.TeamMembership.objects.create(user=request_user, team=team, responsible=_('Owner'))
-
-        request_user.role = Role.PROJECT_ADMIN
-        request_user.save()
 
         return team
 
@@ -44,7 +40,7 @@ class TeamCreateSerializersResponse(serializers.ModelSerializer):
     """
     class Meta:
         model = models.TeamModel
-        fields = ['name', 'description']
+        fields = ['name', 'description', 'created_by']
 
 
 class UsersSerializers(serializers.Serializer):

@@ -9,6 +9,7 @@ from apps.team import text
 from apps.account.enums import UserRoleEnum
 
 @pytest.mark.django_db
+@pytest.mark.django_db
 class TestTeamCreateView:
 
     def setup_method(self):
@@ -18,14 +19,15 @@ class TestTeamCreateView:
         self.url = reverse("apps.team:team_create")
 
     def test_create_team_success(self):
+        """ بررسی موفقیت‌آمیز بودن ایجاد تیم """
         data = {"name": "Awesome Team", "description": "Best team ever!"}
         response = self.client.post(self.url, data)
 
         assert response.status_code == 201
-        assert TeamModel.objects.filter(name="Awesome Team").exists()
-        assert TeamMembership.objects.filter(user=self.user, team__name="Awesome Team", responsible="Owner").exists()
+        assert TeamModel.objects.filter(name="Awesome Team", created_by=self.user).exists()  # بررسی مالکیت
 
     def test_create_team_duplicate_name(self):
+        """ بررسی خطا هنگام استفاده از نام تکراری """
         TeamFactory(name="Duplicate Team")
         data = {"name": "Duplicate Team", "description": "Trying to reuse the name"}
         response = self.client.post(self.url, data)
@@ -34,11 +36,14 @@ class TestTeamCreateView:
         assert str(response.data["name"][0]) == str(text.team_registered)
 
     def test_create_team_without_authentication(self):
+        """ بررسی خطا هنگام تلاش برای ایجاد تیم بدون لاگین """
         self.client.force_authenticate(user=None)
         data = {"name": "NoAuth Team", "description": "Testing without login"}
         response = self.client.post(self.url, data)
 
         assert response.status_code == 401
+
+
 
 
 @pytest.mark.django_db
@@ -182,3 +187,5 @@ class TestJoinTeamView:
         response = self.client.post(url, {"team": team.id, "user": self.user.id})
 
         assert response.status_code == 401
+        
+

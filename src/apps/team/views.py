@@ -9,18 +9,15 @@ from drf_yasg.utils import swagger_auto_schema
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
 from apps.account.auth import permissions as per
-
 from . import models, exceptions, serializers, text
 
 
 User = get_user_model()
 
 
-# TODO: improve by mixins
+# TODO: improve by mixins & permission change to viewer
 class TeamCreateView(ms.SwaggerViewMixin, APIView):
-    """
-        team creation view
-    """
+    """ Team creation view """
     swagger_title = 'Team creation'
     swagger_tags = ['Team']
     serializer = serializers.TeamCreateSerializers
@@ -32,9 +29,7 @@ class TeamCreateView(ms.SwaggerViewMixin, APIView):
 
         if ser.is_valid():
             team = ser.save()
-            if not ser.is_valid():
-                raise exceptions.NotCreateTeam
-            response_ser = self.serializer_response(team)
+            response_ser = self.serializer_response(team, context={"request": request})
             return Response(response_ser.data, status=status.HTTP_201_CREATED)
 
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -110,6 +105,7 @@ class TeamUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
         }, status=200)
 
 
+# TODO: permission change to viewer
 class JoinTeamView(ms.SwaggerViewMixin, APIView):
     """
         view join team request
@@ -134,3 +130,6 @@ class JoinTeamView(ms.SwaggerViewMixin, APIView):
             "message": text.success_team_request,
         })
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+
+

@@ -9,6 +9,7 @@ from .enums import JoinTeamStatusEnum
 class TeamModel(BaseModel):
 
     name = models.CharField(_('Team name'), max_length=128)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('Created by'), null=True, on_delete=models.SET_NULL, related_name='created_teams')
     description = models.TextField(_('Description'), blank=True, null=True)
     is_public = models.BooleanField(_('Is public'), default=False)
     is_locked = models.BooleanField(_('Is locked'), default=False)

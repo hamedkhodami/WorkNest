@@ -14,3 +14,4 @@ class UserGenderEnum(TextChoices):
 
     MALE = 'm', _('Male')
     FEMALE = 'f', _('Female')
+
