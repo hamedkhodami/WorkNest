@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,10 +10,12 @@ from drf_yasg.utils import swagger_auto_schema
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
 from apps.account.auth import permissions as per
-from . import models, exceptions, serializers, text
+from . import models, exceptions, serializers, text, enums
+from .service.create_membership import create_membership_if_accepted
 
 
 User = get_user_model()
+STATUS_CHOICES = enums.JoinTeamStatusEnum
 
 
 # TODO: improve by mixins & permission change to viewer
@@ -130,6 +133,30 @@ class JoinTeamView(ms.SwaggerViewMixin, APIView):
             "message": text.success_team_request,
         })
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ResultJoinTeamView(ms.SwaggerViewMixin, APIView):
+    """
+        View for resolving join requests (Accept/Reject)
+    """
+    swagger_title = 'Result join'
+    swagger_tags = ['Team']
+    serializer = serializers.ResultJoinTeamSerializers
+    permission_classes = (per.IsAdminOrProjectAdmin,)
+    accept_request = create_membership_if_accepted
+
+
+    def post(self, request, pk):
+        accept_request = create_membership_if_accepted
+        join_request = get_object_or_404(models.TeamJoinRequest, pk=pk)
+        ser = self.serializer(join_request, data=request.data, partial=True)
+        ser.is_valid(raise_exception=True)
+        ser.save()
+        accept_request(join_request)
+
+        # TODO: Implement notification system
+
+        return Response({"message": text.request_resolved}, status=status.HTTP_200_OK)
 
 
 

@@ -131,6 +131,20 @@ class RequestJoinTeamResponseSerializers(serializers.Serializer):
     message = serializers.CharField()
 
 
+class ResultJoinTeamSerializers(serializers.ModelSerializer):
+    """
+        Serializer for resolving join requests (Accept/Reject)
+    """
+    class Meta:
+        model = models.TeamJoinRequest
+        fields = ['status']
+
+    def validated_status(self, value):
+        if value not in [STATUS_CHOICES.ACCEPTED, STATUS_CHOICES.REJECTED]:
+            raise serializers.ValidationError(text.invalid_status)
+        return value
+
+
 
 
 
