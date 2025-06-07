@@ -1,5 +1,5 @@
 import factory
-from apps.team.models import TeamModel, TeamMembership, TeamJoinRequest
+from apps.team.models import TeamModel, TeamMembership, TeamJoinRequest, TeamInvitation
 from apps.account.tests.factories import UserFactory
 from apps.team import enums
 
@@ -30,3 +30,14 @@ class TeamJoinRequestFactory(factory.django.DjangoModelFactory):
     team = factory.SubFactory(TeamFactory)
     resolved_by = None
     status = factory.Iterator([enums.JoinTeamStatusEnum.PENDING, enums.JoinTeamStatusEnum.ACCEPTED, enums.JoinTeamStatusEnum.REJECTED])
+
+
+class TeamInvitationFactory(factory.django.DjangoModelFactory):
+
+    class Meta:
+        model = TeamInvitation
+
+    inviter = factory.SubFactory(UserFactory)
+    invitee = factory.SubFactory(UserFactory)
+    team = factory.SubFactory(TeamFactory)
+    status = factory.Iterator(enums.JoinTeamStatusEnum.choices)

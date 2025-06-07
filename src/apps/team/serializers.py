@@ -132,19 +132,88 @@ class RequestJoinTeamResponseSerializers(serializers.Serializer):
 
 
 class ResultJoinTeamSerializers(serializers.ModelSerializer):
-    """
-        Serializer for resolving join requests (Accept/Reject)
-    """
+    """ Serializer for resolving join requests (Accept/Reject) """
+
+    status = serializers.ChoiceField(choices=STATUS_CHOICES.choices)
+
     class Meta:
         model = models.TeamJoinRequest
         fields = ['status']
 
-    def validated_status(self, value):
+    def validate_status(self, value):
         if value not in [STATUS_CHOICES.ACCEPTED, STATUS_CHOICES.REJECTED]:
             raise serializers.ValidationError(text.invalid_status)
         return value
 
 
+class TeamInvitationRequestSerializers(serializers.ModelSerializer):
+    """
+        Serializers Invitation join team for users
+    """
+    inviter = serializers.StringRelatedField(read_only=True)
+    invitee = serializers.StringRelatedField()
+    team = serializers.StringRelatedField(read_only=True)
+    status = serializers.ChoiceField(choices=STATUS_CHOICES.choices)
+
+    class Meta:
+        model = models.TeamInvitation
+        fields = ['id', 'inviter', 'invitee', 'team', 'status', 'created_at']
+        read_only_fields = ['inviter', 'team', 'created_at']
+
+    def validated_team(self, value):
+        if value.is_locked == True:
+            raise serializers.ValidationError(text.team_locked)
+        return value
+
+    def validate_invitee(self, value):
+        team = self.initial_data.get("team")
+        if models.TeamInvitation.objects.filter(invitee=value, team=team).exists():
+            raise serializers.ValidationError(text.duplicate_invitation)
+        return value
+
+    def update(self, instance, validated_data):
+        if instance.status != validated_data.get('status', instance.status):
+            instance.status = validated_data['status']
+            instance.save()
+        return instance
+
+
+class TeamInvitationRequestResponseSerializers(serializers.Serializer):
+    """
+        Serializers Response Invitation join team for users
+    """
+    message = serializers.CharField()
+
+
+class UserTeamRequestSerializer(serializers.Serializer):
+    """
+        Manage membership requests and invitations in a single serializer
+    """
+
+    type = serializers.CharField()
+    user = serializers.StringRelatedField()
+    team = serializers.StringRelatedField()
+    status = serializers.ChoiceField(choices=STATUS_CHOICES.choices)
+    resolved_by = serializers.StringRelatedField(required=False)
+
+    def to_representation(self, instance):
+        if isinstance(instance, models.TeamInvitation):
+            return {
+                "type": "INVITATION",
+                "user": instance.invitee.full_name(),
+                "team": instance.team.name,
+                "status": instance.status,
+                "resolved_by": instance.inviter.full_name()
+            }
+        elif isinstance(instance, models.TeamJoinRequest):
+            return {
+                "type": "JOIN_REQUEST",
+                "user": instance.user.full_name(),
+                "team": instance.team.name,
+                "status": instance.status,
+                "resolved_by": instance.resolved_by.full_name() if instance.resolved_by else None
+            }
+        return super().to_representation(instance)
 
 
 

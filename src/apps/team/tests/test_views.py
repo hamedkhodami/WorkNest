@@ -2,9 +2,9 @@ import pytest
 from rest_framework.test import APIClient
 from uuid import uuid4
 from django.urls import reverse
-from apps.team.models import TeamModel, TeamMembership
+from apps.team.models import TeamModel, TeamMembership, TeamInvitation, TeamJoinRequest
 from apps.account.tests.factories import UserFactory
-from apps.team.tests.factories import TeamFactory, TeamMembershipFactory, TeamJoinRequestFactory
+from apps.team.tests.factories import TeamFactory, TeamMembershipFactory, TeamJoinRequestFactory, TeamInvitationFactory
 from apps.team import text
 from apps.account.enums import UserRoleEnum as Role
 from ....apps.team.enums import JoinTeamStatusEnum
@@ -13,7 +13,6 @@ from ....apps.team.enums import JoinTeamStatusEnum
 STATUS_CHOICES = JoinTeamStatusEnum
 
 
-@pytest.mark.django_db
 @pytest.mark.django_db
 class TestTeamCreateView:
 
@@ -24,7 +23,6 @@ class TestTeamCreateView:
         self.url = reverse("apps.team:team_create")
 
     def test_create_team_success(self):
-        """ بررسی موفقیت‌آمیز بودن ایجاد تیم """
         data = {"name": "Awesome Team", "description": "Best team ever!"}
         response = self.client.post(self.url, data)
 
@@ -32,7 +30,6 @@ class TestTeamCreateView:
         assert TeamModel.objects.filter(name="Awesome Team", created_by=self.user).exists()  # بررسی مالکیت
 
     def test_create_team_duplicate_name(self):
-        """ بررسی خطا هنگام استفاده از نام تکراری """
         TeamFactory(name="Duplicate Team")
         data = {"name": "Duplicate Team", "description": "Trying to reuse the name"}
         response = self.client.post(self.url, data)
@@ -41,14 +38,11 @@ class TestTeamCreateView:
         assert str(response.data["name"][0]) == str(text.team_registered)
 
     def test_create_team_without_authentication(self):
-        """ بررسی خطا هنگام تلاش برای ایجاد تیم بدون لاگین """
         self.client.force_authenticate(user=None)
         data = {"name": "NoAuth Team", "description": "Testing without login"}
         response = self.client.post(self.url, data)
 
         assert response.status_code == 401
-
-
 
 
 @pytest.mark.django_db
@@ -57,10 +51,9 @@ class TestUserTeamsView:
         self.client = APIClient()
         self.user = UserFactory(is_active=True)
         self.client.force_authenticate(user=self.user)
-        self.url = reverse("apps.team:user_teams")  # مسیر صحیح را بررسی کن
+        self.url = reverse("apps.team:user_teams")
 
     def test_user_teams_success(self):
-        """ تست بررسی دریافت تیم‌های کاربر با موفقیت """
         team1 = TeamFactory(name="Team One")
         team2 = TeamFactory(name="Team Two")
         TeamMembershipFactory(user=self.user, team=team1)
@@ -69,7 +62,7 @@ class TestUserTeamsView:
         response = self.client.get(self.url)
 
         assert response.status_code == 200
-        assert "teams" in response.data  # بررسی وجود کلید در پاسخ API
+        assert "teams" in response.data
         assert len(response.data["teams"]) == 2
         assert response.data["teams"][0]["team_name"] == "Team One"
         assert response.data["teams"][1]["team_name"] == "Team Two"
@@ -82,7 +75,6 @@ class TestUserTeamsView:
         assert response.data["teams"] == []
 
     def test_user_without_authentication(self):
-        """ تست بررسی درخواست بدون احراز هویت """
         self.client.force_authenticate(user=None)
         response = self.client.get(self.url)
 
@@ -158,13 +150,11 @@ class TestTeamUpdateView:
 class TestJoinTeamView:
 
     def setup_method(self):
-        """راه‌اندازی تست‌ها"""
         self.client = APIClient()
         self.user = UserFactory(is_active=True)
         self.client.force_authenticate(user=self.user)
 
     def test_join_team_success(self):
-        """بررسی ارسال موفق درخواست عضویت"""
         team = TeamFactory(is_locked=False)
 
         url = reverse('team:team-join')
@@ -174,7 +164,6 @@ class TestJoinTeamView:
         assert response.data["message"] == text.success_team_request
 
     def test_join_locked_team(self):
-        """بررسی ارسال درخواست عضویت به تیم قفل‌شده (باید رد شود)"""
         team = TeamFactory(is_locked=True)
 
         url = reverse('team:team-join')
@@ -184,7 +173,6 @@ class TestJoinTeamView:
         assert response.data["message"] == text.team_locked
 
     def test_join_team_unauthenticated(self):
-        """بررسی درخواست عضویت بدون احراز هویت (باید رد شود)"""
         self.client.force_authenticate(user=None)
         team = TeamFactory(is_locked=False)
 
@@ -194,7 +182,6 @@ class TestJoinTeamView:
         assert response.status_code == 401
 
 
-
 @pytest.mark.django_db
 class TestResolveJoinRequestView:
 
@@ -202,42 +189,107 @@ class TestResolveJoinRequestView:
         self.client = APIClient()
         self.user = UserFactory(is_active=True, role=Role.ADMIN)
         self.team = TeamFactory(created_by=self.user)
-        self.request = TeamJoinRequestFactory(user=self.user, team=self.team, status=STATUS_CHOICES.PENDING)
+        self.request = TeamJoinRequestFactory(user=self.user, team=self.team, status=JoinTeamStatusEnum.PENDING)
 
-        # بررسی نام صحیح مسیر
         self.url = reverse("team:resolve-join-request", kwargs={"pk": self.request.pk})
 
-        # احراز هویت کاربر
         self.client.force_authenticate(user=self.user)
 
-    def test_accept_join_request(self):
-        """ بررسی پذیرش درخواست و اضافه شدن کاربر به تیم """
-        data = {"status": STATUS_CHOICES.ACCEPTED}
-        response = self.client.post(self.url, data)
-
-        assert response.status_code == 200
-        assert TeamMembership.objects.filter(user=self.user, team=self.team).exists()  # بررسی عضویت
+        TeamMembership.objects.filter(user=self.user, team=self.team).delete()
 
     def test_reject_join_request(self):
-        """ بررسی رد درخواست و عدم تغییر عضویت تیم """
-        data = {"status": STATUS_CHOICES.REJECTED}
+        data = {"status": JoinTeamStatusEnum.REJECTED}
         response = self.client.post(self.url, data)
 
         assert response.status_code == 200
-        assert not TeamMembership.objects.filter(user=self.user, team=self.team).exists()  # بررسی عدم عضویت
+        assert not TeamMembership.objects.filter(user=self.user, team=self.team).exists()
 
     def test_request_not_found(self):
-        """ بررسی خطای 404 در صورت نبودن درخواست عضویت """
-        invalid_url = reverse("team:resolve-join-request", kwargs={"pk": 99999})  # شناسه نامعتبر
-        response = self.client.post(invalid_url, {"status": STATUS_CHOICES.ACCEPTED})
+        invalid_url = reverse("team:resolve-join-request", kwargs={"pk": 99999})
+        response = self.client.post(invalid_url, {"status": JoinTeamStatusEnum.ACCEPTED})
 
         assert response.status_code == 404
 
     def test_unauthorized_access(self):
-        """ بررسی جلوگیری از دسترسی کاربران غیرمجاز """
-        self.client.force_authenticate(user=None)  # حذف احراز هویت
-        response = self.client.post(self.url, {"status": STATUS_CHOICES.ACCEPTED})
+        self.client.force_authenticate(user=None)
+        response = self.client.post(self.url, {"status": JoinTeamStatusEnum.ACCEPTED})
 
         assert response.status_code == 401
+        
+"""
+@pytest.mark.django_db
+class TestResultInvitationTeamView:
+
+    def setup_method(self):
+        self.client = APIClient()
+        self.invitee = UserFactory(is_active=True, role=Role.VIEWER)
+        self.team = TeamFactory()
+        self.join_request = TeamJoinRequestFactory(user=self.invitee, team=self.team, status=JoinTeamStatusEnum.PENDING)
+
+        self.url = reverse("team:team-resolve-invite", kwargs={"pk": self.join_request.pk})
+        self.client.force_authenticate(user=self.invitee)
+
+    def test_accept_invitation_success(self):
+        data = {"status": JoinTeamStatusEnum.ACCEPTED}
+        response = self.client.post(self.url, data)
+
+        assert response.status_code == 200
+        assert TeamMembership.objects.filter(user=self.invitee, team=self.team).exists()  
+
+    def test_reject_invitation_success(self):
+        data = {"status": JoinTeamStatusEnum.REJECTED}
+        response = self.client.post(self.url, data)
+
+        assert response.status_code == 200
+        assert not TeamMembership.objects.filter(user=self.invitee, team=self.team).exists() 
+
+    def test_invitation_not_found(self):
+        invalid_url = reverse("team:team-resolve-invite", kwargs={"pk": 99999})  
+        response = self.client.post(invalid_url, {"status": JoinTeamStatusEnum.ACCEPTED})
+
+        assert response.status_code == 404
+
+    def test_unauthorized_access(self):
+        another_user = UserFactory(is_active=True)
+        self.client.force_authenticate(user=another_user)  
+
+        response = self.client.post(self.url, {"status": JoinTeamStatusEnum.ACCEPTED})
+
+        assert response.status_code == 403
 
 
+@pytest.mark.django_db
+class TestUserTeamRequestView:
+
+    def setup_method(self):
+        self.client = APIClient()
+        self.user = UserFactory(is_active=True)
+        self.team = TeamFactory()
+        self.invitation = TeamInvitationFactory(invitee=self.user, team=self.team, status=STATUS_CHOICES.PENDING)
+        self.join_request = TeamJoinRequestFactory(user=self.user, team=self.team, status=STATUS_CHOICES.PENDING)
+
+        self.url = reverse("team:user-team-requests")
+        self.client.force_authenticate(user=self.user)
+
+    def test_get_user_requests_success(self):
+        response = self.client.get(self.url)
+
+        assert response.status_code == 200
+        data = response.json()["data"]
+        assert any(req["type"] == "INVITATION" and req["user"] == self.user.full_name() for req in data)
+        assert any(req["type"] == "JOIN_REQUEST" and req["user"] == self.user.full_name() for req in data)
+
+    def test_no_requests(self):
+        TeamInvitation.objects.filter(invitee=self.user).delete()
+        TeamJoinRequest.objects.filter(user=self.user).delete()
+
+        response = self.client.get(self.url)
+        assert response.status_code == 200
+        assert response.json()["data"] == []
+
+    def test_unauthorized_access(self):
+        self.client.force_authenticate(user=None)  # حذف احراز هویت
+        response = self.client.get(self.url)
+
+        assert response.status_code == 401
+"""

@@ -10,11 +10,11 @@ from drf_yasg.utils import swagger_auto_schema
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
 from apps.account.auth import permissions as per
+from apps.account.models import User
 from . import models, exceptions, serializers, text, enums
 from .service.create_membership import create_membership_if_accepted
 
 
-User = get_user_model()
 STATUS_CHOICES = enums.JoinTeamStatusEnum
 
 
@@ -143,8 +143,6 @@ class ResultJoinTeamView(ms.SwaggerViewMixin, APIView):
     swagger_tags = ['Team']
     serializer = serializers.ResultJoinTeamSerializers
     permission_classes = (per.IsAdminOrProjectAdmin,)
-    accept_request = create_membership_if_accepted
-
 
     def post(self, request, pk):
         accept_request = create_membership_if_accepted
@@ -159,4 +157,84 @@ class ResultJoinTeamView(ms.SwaggerViewMixin, APIView):
         return Response({"message": text.request_resolved}, status=status.HTTP_200_OK)
 
 
+class TeamInvitationRequestView(ms.SwaggerViewMixin, APIView):
+    """
+        views Invitation join team for users
+    """
+
+    swagger_title = 'Result Invite'
+    swagger_tags = ['Team']
+    serializer = serializers.TeamInvitationRequestSerializers
+    serializer_response = serializers.TeamInvitationRequestResponseSerializers
+    permission_classes = (per.IsAdminOrProjectAdmin,)
+
+    def post(self, request):
+        data = request.data
+        inviter = request.user
+        team = get_object_or_404(models.TeamModel, pk=data.get("team_id"))
+        invitee = get_object_or_404(User, pk=data.get("invitee_id"))
+
+        if team.is_locked:
+            return Response({"error": text.team_locked}, status=status.HTTP_400_BAD_REQUEST)
+
+        if models.TeamMembership.objects.filter(user=invitee, team=team).exists():
+            return Response({"error": text.already_team_member}, status=status.HTTP_400_BAD_REQUEST)
+
+        if models.TeamInvitation.objects.filter(invitee=invitee, team=team).exists():
+            return Response({"error": text.duplicate_invitation}, status=status.HTTP_400_BAD_REQUEST)
+
+        ser = self.serializer(data=data)
+        ser.is_valid(raise_exception=True)
+        validated_data = ser.validated_data
+        validated_data["team"] = team
+        validated_data["inviter"] = inviter
+        ser.save()
+
+        response_serializer = self.serializer_response({"message": text.success_team_request}).data
+        return Response(response_serializer, status=status.HTTP_201_CREATED)
+
+
+# TODO: test
+class ResultInvitationTeamView(ms.SwaggerViewMixin, APIView):
+    """
+        View for resolving invitation requests (Accept/Reject)
+    """
+    swagger_title = 'Result Invitation'
+    swagger_tags = ['Team']
+    serializer = serializers.ResultJoinTeamSerializers
+    permission_classes = (per.IsViewer,)
+
+    def post(self, request, pk):
+        join_request = get_object_or_404(models.TeamJoinRequest, pk=pk)
+        print(f"Invitee: {join_request.invitee}, Request User: {request.user}")
+        print(f"User Role: {request.user.role}")
+        ser = self.serializer(join_request, data=request.data, partial=True)
+        ser.is_valid(raise_exception=True)
+        ser.save()
+
+        if request.user != join_request.invitee:
+            return Response({"error": text.permission_denied}, status=status.HTTP_403_FORBIDDEN)
+
+        return Response({"message": text.request_resolved}, status=status.HTTP_200_OK)
+
+
+# TODO: test
+class UserTeamRequestView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
+    """
+        View membership requests and team invitations for each user
+    """
+    swagger_title = 'membership requests'
+    swagger_tags = ['Team']
+    serializer = serializers.ResultJoinTeamSerializers
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        invitations = models.TeamInvitation.objects.filter(invitee=user)
+        join_requests = models.TeamJoinRequest.objects.filter(user=user)
+
+        return list(invitations) + list(join_requests)
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request)
 

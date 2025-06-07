@@ -21,3 +21,7 @@ team_request_pending = _('Your request for joining is being processed')
 success_team_request = _('Your request sent')
 
 invalid_status = _('This status is invalid')
+
+duplicate_invitation = _('This user has already been invited to this team')
+
+already_team_member = _('This user has already been member to this team')

@@ -1,6 +1,7 @@
 from rest_framework import permissions as _permissions
 from ..enums import UserRoleEnum
 
+
 class BasePermissionCustom(_permissions.BasePermission):
     user_role = ''
 

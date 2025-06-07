@@ -1,5 +1,5 @@
 from apps.team.models import TeamModel, TeamMembership
-from src.apps.account.enums import UserRoleEnum as Role
+from apps.account.enums import UserRoleEnum as Role
 
 
 def update_user_role(user):
