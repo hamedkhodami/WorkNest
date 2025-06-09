@@ -9,7 +9,7 @@ class BasePermissionCustom(_permissions.BasePermission):
         user = request.user
         if not user.is_authenticated or user.is_blocked:
             return False
-        return user.role == self.get_roles()
+        return user.role in self.get_roles()
 
     @classmethod
     def get_role(cls):

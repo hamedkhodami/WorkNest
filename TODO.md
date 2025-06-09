@@ -13,6 +13,5 @@
 # TODOs – Team App
 
 ## Feature: 
-- [ ] Improve TeamCreateView & UsersTeamsView by mixins
-- [ ] change permissions in TeamCreateView & JoinTeamView
+
 -  [ ] Add notification

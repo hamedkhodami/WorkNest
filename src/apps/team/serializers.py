@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.utils.translation import gettext_lazy as _
 
 from . import models, text, exceptions, enums
 from apps.account.enums import UserRoleEnum
@@ -111,11 +110,6 @@ class RequestJoinTeamSerializers(serializers.ModelSerializer):
         model = models.TeamJoinRequest
         fields = ['team', 'user']
 
-    def validated_team(self, value):
-        if value.is_locked == True:
-            raise serializers.ValidationError(text.team_locked)
-        return value
-
     def validate(self, data):
         user = data["user"]
         team = data["team"]
@@ -216,9 +210,29 @@ class UserTeamRequestSerializer(serializers.Serializer):
         return super().to_representation(instance)
 
 
+class RemoveTeamMemberSerializer(serializers.Serializer):
+    """
+        Serializers remove user from team
+    """
+    user_id = serializers.UUIDField()
+    team_id = serializers.UUIDField()
+
+    def validate(self, attrs):
+        user_id = attrs.get('user_id')
+        team_id = attrs.get('team_id')
+
+        # بررسی اینکه کاربر عضو تیم هست
+        if not models.TeamMembership.objects.filter(user_id=user_id, team_id=team_id).exists():
+            raise serializers.ValidationError("این کاربر عضو این تیم نیست.")
+
+        return attrs
 
 
-
+class RemoveTeamMemberResponseSerializers(serializers.Serializer):
+    """
+        Serializers Response remove user from team
+    """
+    message = serializers.CharField()
 
 
 

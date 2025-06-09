@@ -1,11 +1,9 @@
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, permissions, status
+from rest_framework import permissions, status
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions as base_permissions
-
-from drf_yasg.utils import swagger_auto_schema
 
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
@@ -18,27 +16,19 @@ from .service.create_membership import create_membership_if_accepted
 STATUS_CHOICES = enums.JoinTeamStatusEnum
 
 
-# TODO: improve by mixins & permission change to viewer
-class TeamCreateView(ms.SwaggerViewMixin, APIView):
-    """ Team creation view """
+class TeamCreateView(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
+    """Team creation view"""
     swagger_title = 'Team creation'
     swagger_tags = ['Team']
+    permission_classes = (per.IsAdminOrProjectAdmin,)
+
     serializer = serializers.TeamCreateSerializers
     serializer_response = serializers.TeamCreateSerializersResponse
-    permission_classes = [base_permissions.IsAuthenticated]
 
-    def post(self, request):
-        ser = self.serializer(data=request.data, context={"request": request})
-
-        if ser.is_valid():
-            team = ser.save()
-            response_ser = self.serializer_response(team, context={"request": request})
-            return Response(response_ser.data, status=status.HTTP_201_CREATED)
-
-        return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
-# TODO: improve by mixins
 class UsersTeamsView(ms.SwaggerViewMixin, APIView):
     """
         view to display the teams the user is a member of
@@ -108,7 +98,6 @@ class TeamUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
         }, status=200)
 
 
-# TODO: permission change to viewer
 class JoinTeamView(ms.SwaggerViewMixin, APIView):
     """
         view join team request
@@ -117,7 +106,7 @@ class JoinTeamView(ms.SwaggerViewMixin, APIView):
     swagger_tags = ['Team']
     serializer = serializers.RequestJoinTeamSerializers
     serializer_response = serializers.RequestJoinTeamResponseSerializers
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (per.IsViewer,)
 
     def post(self, request):
         ser = self.serializer(data=request.data)
@@ -194,7 +183,6 @@ class TeamInvitationRequestView(ms.SwaggerViewMixin, APIView):
         return Response(response_serializer, status=status.HTTP_201_CREATED)
 
 
-# TODO: test
 class ResultInvitationTeamView(ms.SwaggerViewMixin, APIView):
     """
         View for resolving invitation requests (Accept/Reject)
@@ -205,36 +193,62 @@ class ResultInvitationTeamView(ms.SwaggerViewMixin, APIView):
     permission_classes = (per.IsViewer,)
 
     def post(self, request, pk):
-        join_request = get_object_or_404(models.TeamJoinRequest, pk=pk)
-        print(f"Invitee: {join_request.invitee}, Request User: {request.user}")
-        print(f"User Role: {request.user.role}")
-        ser = self.serializer(join_request, data=request.data, partial=True)
-        ser.is_valid(raise_exception=True)
-        ser.save()
+        join_request = get_object_or_404(models.TeamInvitation, pk=pk)
 
         if request.user != join_request.invitee:
             return Response({"error": text.permission_denied}, status=status.HTTP_403_FORBIDDEN)
 
+        ser = self.serializer(join_request, data=request.data, partial=True)
+        ser.is_valid(raise_exception=True)
+        ser.save()
+
+        if ser.validated_data.get("status") == STATUS_CHOICES.ACCEPTED:
+            models.TeamMembership.objects.get_or_create(user=request.user, team=join_request.team)
+
         return Response({"message": text.request_resolved}, status=status.HTTP_200_OK)
 
 
-# TODO: test
-class UserTeamRequestView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
+class UserTeamRequestView(ms.SwaggerViewMixin, ListAPIView):
     """
         View membership requests and team invitations for each user
     """
     swagger_title = 'membership requests'
     swagger_tags = ['Team']
-    serializer = serializers.ResultJoinTeamSerializers
+    serializer_class = serializers.UserTeamRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
         invitations = models.TeamInvitation.objects.filter(invitee=user)
         join_requests = models.TeamJoinRequest.objects.filter(user=user)
-
         return list(invitations) + list(join_requests)
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request)
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({"data": serializer.data}, status=status.HTTP_200_OK)
+
+
+class RemoveTeamMemberView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
+    """
+        View to remove a team member
+    """
+    swagger_title = 'membership requests'
+    swagger_tags = ['Team']
+    permission_classes = (per.IsAdminOrProjectAdmin,)
+    serializer_class = serializers.RemoveTeamMemberSerializer
+    serializer_response = serializers.RemoveTeamMemberResponseSerializers
+
+    def delete(self, request, *args, **kwargs):
+        return self.delete_instance(request)
+
+    def get_instance(self):
+
+        user_id = self.validated_data['user_id']
+        team_id = self.validated_data['team_id']
+        return models.TeamMembership.objects.get(user_id=user_id, team_id=team_id)
+
+
+
+
 

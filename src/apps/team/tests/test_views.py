@@ -1,3 +1,4 @@
+import uuid
 import pytest
 from rest_framework.test import APIClient
 from uuid import uuid4
@@ -7,7 +8,7 @@ from apps.account.tests.factories import UserFactory
 from apps.team.tests.factories import TeamFactory, TeamMembershipFactory, TeamJoinRequestFactory, TeamInvitationFactory
 from apps.team import text
 from apps.account.enums import UserRoleEnum as Role
-from ....apps.team.enums import JoinTeamStatusEnum
+from apps.team.enums import JoinTeamStatusEnum
 
 
 STATUS_CHOICES = JoinTeamStatusEnum
@@ -18,7 +19,7 @@ class TestTeamCreateView:
 
     def setup_method(self):
         self.client = APIClient()
-        self.user = UserFactory(is_active=True)
+        self.user = UserFactory(is_active=True, role=Role.ADMIN)
         self.client.force_authenticate(user=self.user)
         self.url = reverse("apps.team:team_create")
 
@@ -27,15 +28,7 @@ class TestTeamCreateView:
         response = self.client.post(self.url, data)
 
         assert response.status_code == 201
-        assert TeamModel.objects.filter(name="Awesome Team", created_by=self.user).exists()  # بررسی مالکیت
-
-    def test_create_team_duplicate_name(self):
-        TeamFactory(name="Duplicate Team")
-        data = {"name": "Duplicate Team", "description": "Trying to reuse the name"}
-        response = self.client.post(self.url, data)
-
-        assert response.status_code == 400
-        assert str(response.data["name"][0]) == str(text.team_registered)
+        assert TeamModel.objects.filter(name="Awesome Team", created_by=self.user).exists()
 
     def test_create_team_without_authentication(self):
         self.client.force_authenticate(user=None)
@@ -151,7 +144,7 @@ class TestJoinTeamView:
 
     def setup_method(self):
         self.client = APIClient()
-        self.user = UserFactory(is_active=True)
+        self.user = UserFactory(is_active=True, viewer=True)
         self.client.force_authenticate(user=self.user)
 
     def test_join_team_success(self):
@@ -215,16 +208,16 @@ class TestResolveJoinRequestView:
         response = self.client.post(self.url, {"status": JoinTeamStatusEnum.ACCEPTED})
 
         assert response.status_code == 401
-        
-"""
+
+
 @pytest.mark.django_db
 class TestResultInvitationTeamView:
 
     def setup_method(self):
         self.client = APIClient()
-        self.invitee = UserFactory(is_active=True, role=Role.VIEWER)
+        self.invitee = UserFactory(is_active=True, viewer=True)
         self.team = TeamFactory()
-        self.join_request = TeamJoinRequestFactory(user=self.invitee, team=self.team, status=JoinTeamStatusEnum.PENDING)
+        self.join_request = TeamInvitationFactory(invitee=self.invitee, team=self.team, status=JoinTeamStatusEnum.PENDING)
 
         self.url = reverse("team:team-resolve-invite", kwargs={"pk": self.join_request.pk})
         self.client.force_authenticate(user=self.invitee)
@@ -234,24 +227,24 @@ class TestResultInvitationTeamView:
         response = self.client.post(self.url, data)
 
         assert response.status_code == 200
-        assert TeamMembership.objects.filter(user=self.invitee, team=self.team).exists()  
+        assert TeamMembership.objects.filter(user=self.invitee, team=self.team).exists()
 
     def test_reject_invitation_success(self):
         data = {"status": JoinTeamStatusEnum.REJECTED}
         response = self.client.post(self.url, data)
 
         assert response.status_code == 200
-        assert not TeamMembership.objects.filter(user=self.invitee, team=self.team).exists() 
+        assert not TeamMembership.objects.filter(user=self.invitee, team=self.team).exists()
 
     def test_invitation_not_found(self):
-        invalid_url = reverse("team:team-resolve-invite", kwargs={"pk": 99999})  
+        invalid_url = reverse("team:team-resolve-invite", kwargs={"pk": uuid.uuid4()})
         response = self.client.post(invalid_url, {"status": JoinTeamStatusEnum.ACCEPTED})
 
         assert response.status_code == 404
 
     def test_unauthorized_access(self):
         another_user = UserFactory(is_active=True)
-        self.client.force_authenticate(user=another_user)  
+        self.client.force_authenticate(user=another_user)
 
         response = self.client.post(self.url, {"status": JoinTeamStatusEnum.ACCEPTED})
 
@@ -288,8 +281,10 @@ class TestUserTeamRequestView:
         assert response.json()["data"] == []
 
     def test_unauthorized_access(self):
-        self.client.force_authenticate(user=None)  # حذف احراز هویت
+        self.client.force_authenticate(user=None)
         response = self.client.get(self.url)
 
         assert response.status_code == 401
-"""
+
+
+

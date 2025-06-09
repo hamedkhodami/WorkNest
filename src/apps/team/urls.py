@@ -13,8 +13,9 @@ urlpatterns = [
     path('join/', views.JoinTeamView.as_view(), name='team-join'),
     path('join-request/<int:pk>/resolve/', views.ResultJoinTeamView.as_view(), name='resolve-join-request'),
     path('invite/', views.TeamInvitationRequestView.as_view(), name='team-invite'),
-    path('invitations/<int:pk>/resolve/', views.ResultInvitationTeamView.as_view(), name='team-resolve-invite'),
+    path('invitations/<uuid:pk>/resolve/', views.ResultInvitationTeamView.as_view(), name='team-resolve-invite'),
     path('requests/', views.UserTeamRequestView.as_view(), name='user-team-requests'),
+    path('remove-member/', views.RemoveTeamMemberView.as_view(), name='remove_team_member'),
 ]
 
 

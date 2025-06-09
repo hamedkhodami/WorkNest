@@ -28,13 +28,13 @@ class CreateViewMixin(ViewMixin):
         additional_data = self.additional_data()
         if additional_data:
             data.update(additional_data)
-        serializer = self.get_serializer()(data=data)
+        serializer = self.get_serializer()(data=data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         self.validated_data = serializer.validated_data
         self.before_save()
         self.obj = serializer.save()
         self.do_success()
-        ser_resp = self.get_serializer_response()(self.obj)
+        ser_resp = self.get_serializer_response()(self.obj, context={'request': request})
         if response:
             return Response(ser_resp.data, status=status.HTTP_201_CREATED)
         return ser_resp.data
@@ -47,6 +47,12 @@ class CreateViewMixin(ViewMixin):
 
     def do_success(self):
         pass
+
+    def get_serializer(self):
+        return self.serializer
+
+    def get_serializer_response(self):
+        return self.serializer_response
 
 
 class UpdateViewMixin(ViewMixin):
