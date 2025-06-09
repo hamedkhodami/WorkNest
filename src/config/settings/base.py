@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'phonenumber_field',
+    'rosetta',
 
     # apps
     'apps.core.apps.CoreConfig',
@@ -249,3 +250,8 @@ CACHES = {
     }
 }
 #---------------------------------------------------------------
+
+PHONENUMBER_DEFAULT_REGION = "IR"
+
+ROSETTA_ACCESS_CONTROL_FUNCTION = lambda u: True
+
