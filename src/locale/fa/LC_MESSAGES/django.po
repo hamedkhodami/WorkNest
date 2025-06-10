@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-10 01:53+0330\n"
-"PO-Revision-Date: 2025-06-10 01:56+0330\n"
+"POT-Creation-Date: 2025-06-10 15:42+0330\n"
+"PO-Revision-Date: 2025-06-10 16:01+0330\n"
 "Last-Translator: Anonymous User <anonymous@user.tld>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -21,19 +21,19 @@ msgstr ""
 
 #: .\apps\account\enums.py:7
 msgid "Admin"
-msgstr ""
+msgstr "ادمین"
 
 #: .\apps\account\enums.py:8
 msgid "Project admin"
-msgstr ""
+msgstr "مدیر پروژه"
 
 #: .\apps\account\enums.py:9
 msgid "Project member"
-msgstr ""
+msgstr "عضو پروژه"
 
 #: .\apps\account\enums.py:10
 msgid "Viewer"
-msgstr ""
+msgstr "مشاهده کننده"
 
 #: .\apps\account\enums.py:15
 msgid "Male"
@@ -41,202 +41,202 @@ msgstr "مرد"
 
 #: .\apps\account\enums.py:16
 msgid "Female"
-msgstr ""
+msgstr "زن"
 
 #: .\apps\account\models.py:85
 msgid "Phone number"
-msgstr ""
+msgstr "شماره تماس"
 
 #: .\apps\account\models.py:86
 msgid "Email"
-msgstr ""
+msgstr "ایمیل"
 
 #: .\apps\account\models.py:87
 msgid "First name"
-msgstr ""
+msgstr "نام"
 
 #: .\apps\account\models.py:88 .\apps\account\models.py:90
 #: .\apps\account\models.py:114
 msgid "No Name"
-msgstr ""
+msgstr "بدون نام"
 
 #: .\apps\account\models.py:89
 msgid "Last name"
-msgstr ""
+msgstr "نام خانوادگی"
 
 #: .\apps\account\models.py:91
 msgid "Role"
-msgstr ""
+msgstr "تقش"
 
 #: .\apps\account\models.py:92
 msgid "National id"
-msgstr ""
+msgstr "کد ملی"
 
 #: .\apps\account\models.py:97
 msgid "Active"
-msgstr ""
+msgstr "فعال"
 
 #: .\apps\account\models.py:106 .\apps\account\models.py:156
 #: .\apps\team\models.py:41 .\apps\team\models.py:82
 msgid "User"
-msgstr ""
+msgstr "کاربر"
 
 #: .\apps\account\models.py:107
 msgid "Users"
-msgstr ""
+msgstr "کاربران"
 
 #: .\apps\account\models.py:157
 msgid "Gender"
-msgstr ""
+msgstr "جنسیت"
 
 #: .\apps\account\models.py:158
 msgid "Bio"
-msgstr ""
+msgstr "بیوگرافی"
 
 #: .\apps\account\models.py:159
 msgid "Picture"
-msgstr ""
+msgstr "تصویر"
 
 #: .\apps\account\models.py:160
 msgid "Degree"
-msgstr ""
+msgstr "مدرک"
 
 #: .\apps\account\models.py:161
 msgid "City"
-msgstr ""
+msgstr "شهر"
 
 #: .\apps\account\models.py:162
 msgid "Skills"
-msgstr ""
+msgstr "مهارت ها"
 
 #: .\apps\account\models.py:165
 msgid "User profile"
-msgstr ""
+msgstr "پروفایل کاربر"
 
 #: .\apps\account\models.py:166
 msgid "Users profile"
-msgstr ""
+msgstr "پروفایل کاربران"
 
 #: .\apps\account\models.py:183
 msgid "Blocked User"
-msgstr ""
+msgstr "کاربر مسدود شده"
 
 #: .\apps\account\models.py:184
 msgid "Blocked Users"
-msgstr ""
+msgstr "کاربران مسدود شده"
 
 #: .\apps\account\text.py:4
 msgid "User in block list"
-msgstr ""
+msgstr "کاربر در لیست مسدود شده‌ها"
 
 #: .\apps\account\text.py:6
 msgid "Phone number is required"
-msgstr ""
+msgstr "شماره تلفن الزامی است"
 
 #: .\apps\account\text.py:8
 msgid "National id is not valid"
-msgstr ""
+msgstr "کد ملی معتبر نیست"
 
 #: .\apps\account\text.py:10
 msgid "Phone number is not valid"
-msgstr ""
+msgstr "شماره تلفن معتبر نیست"
 
 #: .\apps\account\text.py:12
 msgid "National id not match"
-msgstr ""
+msgstr "کد ملی مطابقت ندارد"
 
 #: .\apps\account\text.py:14
 msgid "Phone number is not match with national id"
-msgstr ""
+msgstr "شماره تلفن با کد ملی مطابقت ندارد"
 
 #: .\apps\account\text.py:16
 msgid "Role is not valid"
-msgstr ""
+msgstr "نقش معتبر نیست"
 
 #: .\apps\account\text.py:18
 msgid "User not found"
-msgstr ""
+msgstr "کاربر یافت نشد"
 
 #: .\apps\account\text.py:20
 msgid "Code already has been send"
-msgstr ""
+msgstr "کد قبلاً ارسال شده است"
 
 #: .\apps\account\text.py:22
 msgid "OTP code sent"
-msgstr ""
+msgstr "کد ارسال شد"
 
 #: .\apps\account\text.py:24
 msgid "The code is wrong or timeout"
-msgstr ""
+msgstr "کد اشتباه است یا زمان آن تمام شده است"
 
 #: .\apps\account\text.py:26
 msgid "Password recovery code sent."
-msgstr ""
+msgstr "کد بازیابی رمز عبور ارسال شد"
 
 #: .\apps\account\text.py:28
 msgid "Your password has been successfully changed"
-msgstr ""
+msgstr "رمز عبور شما با موفقیت تغییر یافت"
 
 #: .\apps\account\text.py:30
 msgid "Confirm code sent"
-msgstr ""
+msgstr "تایید کد ارسال شده"
 
 #: .\apps\account\text.py:32
 msgid "Your phone number confirmed successfully"
-msgstr ""
+msgstr "شماره تلفن شما با موفقیت تایید شد"
 
 #: .\apps\account\text.py:34
 msgid "User already has exited"
-msgstr ""
+msgstr "کاربر قبلاً خارج شده است"
 
 #: .\apps\account\text.py:36
 msgid "Register otp code sent"
-msgstr ""
+msgstr "کد ارسال شده را ثبت کنید"
 
 #: .\apps\account\text.py:38
 msgid "Profile list was successfully restored"
-msgstr ""
+msgstr "لیست پروفایل با موفقیت بازیابی شد"
 
 #: .\apps\account\text.py:40
 msgid "Profile was successfully update"
-msgstr ""
+msgstr "پروفایل با موفقیت به‌روزرسانی شد"
 
 #: .\apps\account\text.py:42
 msgid "Profile not found"
-msgstr ""
+msgstr "نمایه یافت نشد"
 
 #: .\apps\account\text.py:44
 msgid "Access denied"
-msgstr ""
+msgstr "دسترسی رد شد"
 
 #: .\apps\account\text.py:46
 msgid "User not blocked"
-msgstr ""
+msgstr "کاربر مسدود نشده است"
 
 #: .\apps\core\exceptions.py:39
 msgid "Validation error"
-msgstr ""
+msgstr "خطای اعتبارسنجی"
 
 #: .\apps\core\exceptions.py:44
 msgid "The operation has already been done"
-msgstr ""
+msgstr "عملیات قبلاً انجام شده است"
 
 #: .\apps\core\exceptions.py:49
 msgid "Field is required"
-msgstr ""
+msgstr "فیلد الزامی است"
 
 #: .\apps\core\exceptions.py:54
 msgid "Field is not valid"
-msgstr ""
+msgstr "فیلد معتبر نیست"
 
 #: .\apps\core\exceptions.py:59
 msgid "App section disabled"
-msgstr ""
+msgstr "بخش برنامه غیرفعال شد"
 
 #: .\apps\core\utils.py:60
 #, python-format
 msgid "%(days)s days ago."
-msgstr ""
+msgstr "%) روز پیش."
 
 #: .\apps\core\utils.py:62
 #, python-format
@@ -250,165 +250,193 @@ msgstr ""
 
 #: .\apps\core\utils.py:66
 msgid "Moments ago"
-msgstr ""
+msgstr "لحظاتی پیش"
 
 #: .\apps\core\utils.py:78 .\apps\core\utils.py:91
 msgid "Entered data is not correct."
-msgstr ""
+msgstr "اطلاعات وارد شده صحیح نیست."
 
 #: .\apps\core\validators.py:10
 msgid "Ensure character are persian"
-msgstr ""
+msgstr "مطمئن شوید که کاراکترها فارسی هستند"
 
 #: .\apps\team\enums.py:6
 msgid "Pending"
-msgstr ""
+msgstr "در حال بررسی"
 
 #: .\apps\team\enums.py:7
 msgid "Accepted"
-msgstr ""
+msgstr "پذیرفته شده"
 
 #: .\apps\team\enums.py:8
 msgid "Rejected"
-msgstr ""
+msgstr "رد شده"
 
 #: .\apps\team\models.py:11
 msgid "Team name"
-msgstr ""
+msgstr "نام تیم"
 
 #: .\apps\team\models.py:12
 msgid "Created by"
-msgstr ""
+msgstr "موسس"
 
 #: .\apps\team\models.py:13
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 #: .\apps\team\models.py:14
 msgid "Is public"
-msgstr ""
+msgstr "عمومی "
 
 #: .\apps\team\models.py:15
 msgid "Is locked"
-msgstr ""
+msgstr "قفل"
 
 #: .\apps\team\models.py:18 .\apps\team\models.py:42 .\apps\team\models.py:67
 #: .\apps\team\models.py:83
 msgid "Team"
-msgstr ""
+msgstr "تیم"
 
 #: .\apps\team\models.py:19
 msgid "Teams"
-msgstr ""
+msgstr "تیم ها"
 
 #: .\apps\team\models.py:28
 msgid "Public"
-msgstr ""
+msgstr "عمومی"
 
 #: .\apps\team\models.py:28
 msgid "Private"
-msgstr ""
+msgstr "خصوصی"
 
 #: .\apps\team\models.py:43
 msgid "Responsible"
-msgstr ""
+msgstr "مسئولیت"
 
 #: .\apps\team\models.py:47
 msgid "TeamMemberShip"
-msgstr ""
+msgstr "اعضا در تیم"
 
 #: .\apps\team\models.py:48
 msgid "TeamMemberShips"
-msgstr ""
+msgstr "اعضا در تیم ها"
 
 #: .\apps\team\models.py:65
 msgid "Inviter"
-msgstr ""
+msgstr "دعوت کننده"
 
 #: .\apps\team\models.py:66
 msgid "Invitee"
-msgstr ""
+msgstr "دعوت شونده"
 
 #: .\apps\team\models.py:68 .\apps\team\models.py:85
 msgid "Status"
-msgstr ""
+msgstr "وضعیت"
 
 #: .\apps\team\models.py:72
 msgid "TeamInvitation"
-msgstr ""
+msgstr "دعوتنامه تیمی"
 
 #: .\apps\team\models.py:73
 msgid "TeamInvitations"
-msgstr ""
+msgstr "دعوت‌نامه‌های تیمی"
 
 #: .\apps\team\models.py:84
 msgid "Resolved_by"
-msgstr ""
+msgstr "حل شده توسط"
 
 #: .\apps\team\models.py:89
 msgid "TeamJoinRequest"
-msgstr ""
+msgstr "درخواست عضویت در تیم"
 
 #: .\apps\team\models.py:90
 msgid "TeamJoinRequests"
-msgstr ""
+msgstr "درخواست‌های عضویت تیمی"
 
 #: .\apps\team\service\create_membership.py:12
 msgid "Member"
-msgstr ""
+msgstr "اعضا"
 
 #: .\apps\team\text.py:3
 msgid "The team has already been registered under this name"
-msgstr ""
+msgstr "این تیم قبلاً با این نام ثبت شده است"
 
 #: .\apps\team\text.py:5
 msgid "You do not have permission to perform this action"
-msgstr ""
+msgstr "شما اجازه انجام این عمل را ندارید"
 
 #: .\apps\team\text.py:7
 msgid "Failed to create the team, please try again later"
-msgstr ""
+msgstr "ایجاد تیم ناموفق بود، لطفاً بعداً دوباره امتحان کنید"
 
 #: .\apps\team\text.py:9
 msgid "Team not found"
-msgstr ""
+msgstr "تیم پیدا نشد"
 
 #: .\apps\team\text.py:11
 msgid "Request not found"
-msgstr ""
+msgstr "درخواست پیدا نشد"
 
 #: .\apps\team\text.py:13
 msgid "Request reviewed"
-msgstr ""
+msgstr "درخواست پیدا مشاهده شد"
 
 #: .\apps\team\text.py:15
 msgid "Details tam updated successfully"
-msgstr ""
+msgstr "جزئیات با موفقیت به‌روزرسانی شد"
 
 #: .\apps\team\text.py:17
 msgid "Team is locked"
-msgstr ""
+msgstr "تیم قفل شده است"
 
 #: .\apps\team\text.py:19
 msgid "Your request for joining is being processed"
-msgstr ""
+msgstr "درخواست عضویت شما در حال بررسی است"
 
 #: .\apps\team\text.py:21
 msgid "Your request sent"
-msgstr ""
+msgstr "درخواست شما ارسال شد"
 
 #: .\apps\team\text.py:23
 msgid "This status is invalid"
-msgstr ""
+msgstr "این وضعیت نامعتبر است"
 
 #: .\apps\team\text.py:25
 msgid "This user has already been invited to this team"
-msgstr ""
+msgstr "این کاربر قبلاً به این تیم دعوت شده است"
 
 #: .\apps\team\text.py:27
 msgid "This user has already been member to this team"
-msgstr ""
+msgstr "این کاربر قبلاً عضو این تیم بوده است"
+
+#: .\apps\team\text.py:29
+msgid "Teams locked"
+msgstr "تیم‌های قفل شده‌"
+
+#: .\apps\team\text.py:31
+msgid "The teams opened"
+msgstr "تیم‌های باز شده"
+
+#: .\apps\team\text.py:33
+msgid "Lock selected teams"
+msgstr "قفل کردن تیم‌های انتخاب شده"
+
+#: .\apps\team\text.py:35
+msgid "Open selected teams"
+msgstr "باز کردن تیم‌های انتخاب شده"
+
+#: .\apps\team\text.py:37
+msgid "Remove selected members from the team"
+msgstr "حذف اعضای انتخاب شده از تیم"
+
+#: .\apps\team\text.py:39
+msgid "Accept selected invitations"
+msgstr "قبول کردن درخواست "
+
+#: .\apps\team\text.py:41
+msgid "Reject_invitations"
+msgstr "رد درخواست "
 
 #: .\config\settings\base.py:110
 msgid "Persian"
-msgstr ""
+msgstr "فارسی"

@@ -110,6 +110,17 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.phone_number} - {self.email or 'No Email'}"
 
+    @property
+    def is_staff(self):
+        return self.is_super_user
+
+    def is_superuser(self):
+        return self.is_super_user
+
+    @property
+    def is_super_user(self):
+        return True if self.role == 'super_user' else False
+
     def full_name(self):
         return f"{self.first_name or ''} {self.last_name or ''}".strip() or _('No Name')
 

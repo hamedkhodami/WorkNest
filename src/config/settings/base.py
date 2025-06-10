@@ -3,32 +3,32 @@ import os
 from dotenv import load_dotenv
 from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 
 
-#---BASE_DIR------------------------------------------------------
+# ---BASE_DIR------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 
 
-#---ENV-----------------------------------------------------------
+# ---ENV-----------------------------------------------------------
 load_dotenv(dotenv_path=BASE_DIR / '.env')
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 
 
-#---SECURITY------------------------------------------------------
+# ---SECURITY------------------------------------------------------
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = bool(int(os.getenv('DEBUG', 1)))
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
-#-----------------------------------------------------------------
+# -----------------------------------------------------------------
 
 
-#---CSRF---------------------------------------------------------
+# ---CSRF---------------------------------------------------------
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED', 'http://127.0.0.1',).split(',')
-#----------------------------------------------------------------
+# ----------------------------------------------------------------
 
 
-#---Application definition---------------------------------------
+# ---Application definition---------------------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.core.apps.CoreConfig',
     'apps.account.apps.AccountConfig',
     'apps.team.apps.TeamConfig',
+    'apps.board.apps.BoardConfig',
 ]
 
 MIDDLEWARE = [
@@ -79,15 +80,15 @@ TEMPLATES = [
 
     },
 ]
-#----------------------------------------------------------------
+# ----------------------------------------------------------------
 
 
-#---WSGI---------------------------------------------------------
+# ---WSGI---------------------------------------------------------
 WSGI_APPLICATION = 'config.wsgi.application'
-#----------------------------------------------------------------
+# ----------------------------------------------------------------
 
 
-#---Password validation------------------------------------------
+# ---Password validation------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -102,10 +103,10 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-#----------------------------------------------------------------
+# ----------------------------------------------------------------
 
 
-#---Internationalization-----------------------------------------
+# ---Internationalization-----------------------------------------
 LANGUAGES = [
     ('fa', _("Persian")),
 ]
@@ -121,41 +122,43 @@ TIME_ZONE = 'Asia/Tehran'
 USE_I18N = True
 
 USE_TZ = False
-#----------------------------------------------------------------
+# ----------------------------------------------------------------
 
 
-#---Static files-------------------------------------------------
+# ---Static files-------------------------------------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = os.getenv('STATIC_ROOT')
 
 STATICFILES_DIRS = [
    os.getenv('STATICFILES_DIRS', BASE_DIR / 'static/assets/'),
 ]
-#----------------------------------------------------------------
+# ----------------------------------------------------------------
 
 
-#---Media--------------------------------------------------------
+# ---Media--------------------------------------------------------
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / os.getenv('MEDIA_ROOT', 'static/media')
-#----------------------------------------------------------------
+# ----------------------------------------------------------------
 
 
-#---Production whitenoise----------------------------------------
+# ---Production whitenoise----------------------------------------
 if int(os.getenv('ENABLE_WHITENOISE', default=0)):
     # Insert Whitenoise Middleware and set as StaticFileStorage
     MIDDLEWARE += [
         'whitenoise.middleware.WhiteNoiseMiddleware',
     ]
     STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
-#----------------------------------------------------------------
+# ----------------------------------------------------------------
 
 
-#Default primary key field type---------------------------------
+# ---Default primary key field type------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 
 
-#---Auth-------------------------------------------------------
+# ---Auth-------------------------------------------------------
+PHONENUMBER_DEFAULT_REGION = "IR"
+
 AUTH_USER_MODEL = 'account.User'
 
 LOGIN_URL = '/u/login'
@@ -183,35 +186,35 @@ CONFIRM_PHONENUMBER_CONFIG = {
     'CODE_LENGTH': 4,
     'STORE_BY': 'confirm_phonenumber_{}'  # redis key
 }
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 
 
-#---Redis-------------------------------------------------------
+# ---Redis-------------------------------------------------------
 REDIS_CONFIG = {
     'DB': int(os.getenv('REDIS_DB', 0)),
     'HOST': os.getenv('REDIS_HOST', 'localhost'),
     'PORT': os.getenv('REDIS_PORT', '6379'),
     'CHANNEL_NAME': os.getenv('REDIS_CHANNEL_NAME', 'market_price')
 }
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 
 
-#---API---------------------------------------------------------
+# ---API---------------------------------------------------------
 API_VERSION = 'v1'
 API_URL_LABEL = 'api'
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 
 
-#---SWAGGER-----------------------------------------------------
+# ---SWAGGER-----------------------------------------------------
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
         "Bearer": {"type": "JWT", "name": "authorization", "in": "header"},
     },
 }
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 
 
-#---REST_FRAMEWORK----------------------------------------------
+# ---REST_FRAMEWORK----------------------------------------------
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'apps.core.exceptions.custom_exception_handler',
     'DEFAULT_PERMISSION_CLASSES': [
@@ -228,10 +231,10 @@ REST_FRAMEWORK = {
         'apps.account.auth.authentication.BaseJWTAuthentication',
     ],
 }
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 
 
-#---JWT---------------------------------------------------------
+# ---JWT---------------------------------------------------------
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=40),  # TODO: must change in production(just use in development)
     "REFRESH_TOKEN_LIFETIME": timedelta(days=20),
@@ -239,19 +242,19 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True
 }
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 
 
-#---CACHES------------------------------------------------------------
+# ---CACHES------------------------------------------------------
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379",
     }
 }
-#---------------------------------------------------------------
+# ---------------------------------------------------------------
 
-PHONENUMBER_DEFAULT_REGION = "IR"
 
-ROSETTA_ACCESS_CONTROL_FUNCTION = lambda u: True
-
+# --ROSETTA------------------------------------------------------
+ROSETTA_ACCESS_CONTROL_FUNCTION = lambda u: u.is_staff
+# ---------------------------------------------------------------

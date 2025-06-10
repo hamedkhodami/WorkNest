@@ -25,3 +25,18 @@ invalid_status = _('This status is invalid')
 duplicate_invitation = _('This user has already been invited to this team')
 
 already_team_member = _('This user has already been member to this team')
+
+teams_locked = _('Teams locked')
+
+teams_opened = _('The teams opened')
+
+lock_team = _('Lock selected teams')
+
+open_team = _('Open selected teams')
+
+remove_member = _('Remove selected members from the team')
+
+accept_invitations = _('Accept selected invitations')
+
+reject_invitations = _('Reject_invitations')
+
