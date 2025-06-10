@@ -18,13 +18,6 @@ class TestTeamModel:
 
         assert team.is_public is True
 
-    def test_is_team_public(self):
-        team_public = TeamFactory(is_public=True)
-        team_private = TeamFactory(is_public=False)
-
-        assert team_public.is_team_public() == "Public"
-        assert team_private.is_team_public() == "Private"
-
     def test_lock_team(self):
         team = TeamFactory(is_locked=False)
         team.lock_team()

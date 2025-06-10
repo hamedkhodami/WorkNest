@@ -96,7 +96,6 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     is_national_id_confirmed = models.BooleanField(default=False)
     is_active = models.BooleanField(_('Active'), default=True)
 
-
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = []
 
@@ -113,13 +112,6 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_super_user
-
-    def is_superuser(self):
-        return self.is_super_user
-
-    @property
-    def is_super_user(self):
-        return True if self.role == 'super_user' else False
 
     def full_name(self):
         return f"{self.first_name or ''} {self.last_name or ''}".strip() or _('No Name')
@@ -200,3 +192,14 @@ class UserBlock(BaseModel):
     def is_blocked_by_admin(self, admin_user):
         return self.admin == admin_user
 
+
+"""
+    def is_superuser(self):
+        return self.is_super_user
+
+    @property
+    def is_super_user(self):
+        return True if self.role == 'super_user' else False
+
+
+"""
