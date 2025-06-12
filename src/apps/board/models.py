@@ -19,7 +19,7 @@ class BoardQuerySet(models.QuerySet):
 class BoardModel(BaseModel):
     title = models.CharField(_('Title'), max_length=128)
     description = models.TextField(_('Description'), blank=True, null=True)
-    is_archived = models.BooleanField(_('Is Archived'), default=False)
+    is_archived = models.BooleanField(_('Is Archived'), default=False, blank=True, null=True)
     team = models.ForeignKey('team.TeamModel', verbose_name=_('Team'), on_delete=models.CASCADE, related_name='boards')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('Created by'), on_delete=models.SET_NULL, null=True, related_name='created_boards')
 

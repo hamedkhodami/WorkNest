@@ -3,10 +3,12 @@ import pytest
 from rest_framework.test import APIClient
 from uuid import uuid4
 from django.urls import reverse
+
+from apps.core import text
+
 from apps.team.models import TeamModel, TeamMembership, TeamInvitation, TeamJoinRequest
 from apps.account.tests.factories import UserFactory
 from apps.team.tests.factories import TeamFactory, TeamMembershipFactory, TeamJoinRequestFactory, TeamInvitationFactory
-from apps.team import text
 from apps.account.enums import UserRoleEnum as Role
 from apps.team.enums import JoinTeamStatusEnum
 

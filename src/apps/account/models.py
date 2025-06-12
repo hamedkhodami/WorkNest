@@ -15,7 +15,7 @@ from apps.core.utils import random_num, get_coded_phone_number
 from apps.core.models import BaseModel
 
 from .enums import UserRoleEnum,UserGenderEnum
-from . import text
+from apps.core import text
 from .auth.utils import is_melli_code
 
 
@@ -48,30 +48,13 @@ class CustomObjectsManager(BaseUserManager):
 
     def create_superuser(self, phone_number, password, **extra_fields):
         extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_staff", True)
+
+        if "national_id" not in extra_fields:
+            extra_fields["national_id"] = secrets.token_hex(5)
+
         return self.create_user(phone_number=phone_number, password=password, role='super_user', **extra_fields)
-
-    def get_queryset(self):
-        return super().get_queryset().filter(is_active=True, userblock__isnull=True)
-
-    @property
-    def all_users(self):
-        return self.get_queryset()
-
-    @property
-    def available_users(self):
-        return self.all_users.exclude(role='super_user')
-
-    @property
-    def project_admins(self):
-        return self.all_users.filter(role='project_admin')
-
-    @property
-    def admin(self):
-        return self.all_users.filter(role='admin')
-
-    @property
-    def members(self):
-        return self.all_users.filter(role='project_member')
 
 
 def generate_referral():
@@ -94,7 +77,10 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     is_phone_number_confirmed = models.BooleanField(default=False)
     is_national_id_confirmed = models.BooleanField(default=False)
+
     is_active = models.BooleanField(_('Active'), default=True)
+    is_superuser = models.BooleanField(_('Superuser'), default=False)
+    is_staff = models.BooleanField(_('Staff'), default=False)
 
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = []
@@ -108,10 +94,6 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.phone_number} - {self.email or 'No Email'}"
-
-    @property
-    def is_staff(self):
-        return self.is_super_user
 
     def full_name(self):
         return f"{self.first_name or ''} {self.last_name or ''}".strip() or _('No Name')
@@ -191,15 +173,3 @@ class UserBlock(BaseModel):
 
     def is_blocked_by_admin(self, admin_user):
         return self.admin == admin_user
-
-
-"""
-    def is_superuser(self):
-        return self.is_super_user
-
-    @property
-    def is_super_user(self):
-        return True if self.role == 'super_user' else False
-
-
-"""

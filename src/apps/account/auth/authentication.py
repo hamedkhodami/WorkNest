@@ -1,7 +1,7 @@
 from rest_framework import exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .. import text
+from apps.core import text
 
 
 class BaseJWTAuthentication(JWTAuthentication):

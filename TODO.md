@@ -15,6 +15,7 @@
 ## Feature: 
 
 -  [ ] Add notification
+-  [ ] check roles
 
 
 # TODOs – Board App
@@ -22,3 +23,5 @@
 ## Feature: 
 
 -  [ ] Add notification
+-  [ ] test delete
+-  [ ] add api update

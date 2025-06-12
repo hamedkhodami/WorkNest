@@ -3,7 +3,6 @@ from apps.team.models import TeamJoinRequest, TeamMembership
 from apps.account.tests.factories import UserFactory
 from apps.team.tests.factories import TeamFactory, TeamMembershipFactory, TeamJoinRequestFactory
 from apps.team.enums import JoinTeamStatusEnum
-from apps.account.service.role_manager import update_user_role
 
 
 @pytest.mark.django_db

@@ -7,9 +7,11 @@ from rest_framework import permissions as base_permissions
 
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
+from apps.core import text
 from apps.account.auth import permissions as per
 from apps.account.models import User
-from . import models, exceptions, serializers, text, enums
+
+from . import models, exceptions, serializers, enums
 from .service.create_membership import create_membership_if_accepted
 
 

@@ -1,11 +1,10 @@
 from rest_framework import serializers
 from phonenumber_field.serializerfields import PhoneNumberField
 
-from apps.core import serializers as core_serializers
 from .auth import utils
-from . import models, exceptions, text
+from . import models, exceptions
+from apps.core import text
 from .enums import UserRoleEnum
-
 
 
 class MessageSerializer(serializers.Serializer):

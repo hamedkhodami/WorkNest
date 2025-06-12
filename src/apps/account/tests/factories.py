@@ -12,11 +12,14 @@ class UserFactory(factory.django.DjangoModelFactory):
     last_name = factory.Faker("last_name")
     national_id = factory.Sequence(lambda n: f"{n:010d}")
     role = UserRoleEnum.VIEWER
+    is_active = True
+    is_superuser = False
+    is_staff = False
 
     class Params:
-        admin = factory.Trait(role=UserRoleEnum.ADMIN)
-        project_admin = factory.Trait(role=UserRoleEnum.PROJECT_ADMIN)
-        project_member = factory.Trait(role=UserRoleEnum.PROJECT_MEMBER)
-        viewer = factory.Trait(role=UserRoleEnum.VIEWER)
+        admin = factory.Trait(role=UserRoleEnum.ADMIN, is_superuser=True, is_staff=True)
+        project_admin = factory.Trait(role=UserRoleEnum.PROJECT_ADMIN, is_superuser=False, is_staff=True)
+        project_member = factory.Trait(role=UserRoleEnum.PROJECT_MEMBER, is_superuser=False, is_staff=False)
+        viewer = factory.Trait(role=UserRoleEnum.VIEWER, is_superuser=False, is_staff=False)
 
 

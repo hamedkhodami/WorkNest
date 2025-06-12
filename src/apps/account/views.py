@@ -21,13 +21,13 @@ from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
 from apps.core import utils, redis_utils
 from apps.core.exceptions import ValidationError, OperationHasAlreadyBeenDoneError
+from apps.core import text
 
-from . import serializers, models, exceptions, text
+from . import serializers, models, exceptions
 from .auth import permissions as per
 
 
 User = get_user_model()
-
 
 
 class TokenRefresh(ms.SwaggerViewMixin, _TokenRefreshView):
@@ -241,7 +241,6 @@ class ResetPassword(ms.SwaggerViewMixin, APIView):
         redis_utils.set_value_expire(user_key, reset_code, conf['TIMEOUT'])
 
         # TODO: Implement notification system
-
 
         res = {'message': text.reset_password_send_code}
         return Response(self.serializer_response(res).data)
@@ -615,7 +614,7 @@ class ProfileUpdateView(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
         ser.save()
 
         return Response({
-            "message": text.success_profile_update,
+            "message": text.success_update,
             "updated_data": ser.data
         }, status=200)
 

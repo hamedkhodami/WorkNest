@@ -1,5 +1,5 @@
 from apps.core.exceptions import APIException
-from . import text
+from apps.core import text
 
 
 class PermissionDenied(APIException):
@@ -11,11 +11,11 @@ class PermissionDenied(APIException):
 class NotCreateTeam(APIException):
     status_code = 500
     default_code = 'not_create_team'
-    message = text.not_create_team
+    message = text.not_create
 
 
 class NotFoundTeam(APIException):
     status_code = 404
     default_code = 'not_found_team'
-    message = text.not_found_team
+    message = text.not_found
 

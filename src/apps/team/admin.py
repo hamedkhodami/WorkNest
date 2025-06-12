@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from . import models, text, enums
+from apps.core import text
+from . import models, enums
 
 STATUS_CHOICES = enums.JoinTeamStatusEnum
 
@@ -84,4 +85,3 @@ class TeamJoinRequestAdmin(admin.ModelAdmin):
 
     approve_requests.short_description = text.accept_invitations
     reject_requests.short_description = text.reject_invitations
-

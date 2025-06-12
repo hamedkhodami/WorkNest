@@ -1,5 +1,5 @@
 from apps.core.exceptions import APIException
-from . import text
+from apps.core import text
 
 
 class NationalIdIsNotValid(APIException):
@@ -53,13 +53,13 @@ class UserIsExists(APIException):
 class ProfileNotFound(APIException):
     status_code = 404
     default_code = 'profile_not_found'
-    message = text.profile_not_found
+    message = text.not_found
 
 
 class AccessDenied(APIException):
     status_code = 403
     default_code = 'access_denied'
-    message = text.access_denied
+    message = text.permission_denied
 
 
 class UserIsNotBlocked(APIException):

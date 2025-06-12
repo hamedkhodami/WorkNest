@@ -1,7 +1,9 @@
 from rest_framework import serializers
 
-from . import models, text, exceptions, enums
+from apps.core import text
 from apps.account.enums import UserRoleEnum
+
+from . import models, exceptions, enums
 
 
 STATUS_CHOICES = enums.JoinTeamStatusEnum
@@ -18,7 +20,7 @@ class TeamCreateSerializers(serializers.ModelSerializer):
 
     def validate_name(self, value):
         if models.TeamModel.objects.filter(name=value).exists():
-            raise serializers.ValidationError(text.team_registered)
+            raise serializers.ValidationError(text.registered_name)
         return value
 
     def create(self, validated_data):
@@ -90,7 +92,7 @@ class TeamUpdateSerializers(serializers.ModelSerializer):
 
         def validate_name(self, value):
             if models.TeamModel.objects.filter(name=value).exists():
-                raise serializers.ValidationError(text.team_registered)
+                raise serializers.ValidationError(text.registered_name)
             return value
 
 
@@ -221,9 +223,8 @@ class RemoveTeamMemberSerializer(serializers.Serializer):
         user_id = attrs.get('user_id')
         team_id = attrs.get('team_id')
 
-        # بررسی اینکه کاربر عضو تیم هست
         if not models.TeamMembership.objects.filter(user_id=user_id, team_id=team_id).exists():
-            raise serializers.ValidationError("این کاربر عضو این تیم نیست.")
+            raise serializers.ValidationError(text.not_match)
 
         return attrs
 
