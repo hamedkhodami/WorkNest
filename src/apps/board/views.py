@@ -28,6 +28,8 @@ class CreateBoardView(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
         response_data = self.create(request, response=False, *args, **kwargs)
         return Response(response_data, status=status.HTTP_201_CREATED)
 
+    # TODO: Implement notification system
+
 
 class BoardsTeamsView(ms.SwaggerViewMixin, APIView):
     """
@@ -74,37 +76,58 @@ class DetailBoardView(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
         return board
 
 
-# TODO : TEST
 class DeleteBoardView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
     """
-     delete board view
+        delete board view
     """
 
-    swagger_title = 'Board delete'
+    swagger_title = "Board Delete"
+    swagger_tags = ["Board"]
+    permission_classes = (per.IsAdminOrProjectAdmin,)
+
+    serializer = serializers.BoardDeleteSerializer
+
+    def delete(self, request, *args, **kwargs):
+        return self.delete_instance(request)
+
+    def get_instance(self):
+        serializer = self.serializer(data=self.request.data, context={"request": self.request})
+        serializer.is_valid(raise_exception=True)
+        self.validated_data = serializer.validated_data
+        return self.validated_data["board"]
+
+
+class BoardUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
+    """
+        board update view
+    """
+    swagger_title = 'Board Update'
     swagger_tags = ['Board']
     permission_classes = (per.IsAdminOrProjectAdmin,)
 
-    serializer = serializers.DeleteBoardSerializers
-    serializer_response = serializers.MessageSerializer
-
-    def delete(self, request, *args, **kwargs):
-        ser = self.serializer(data=self.request.data)
-        ser.is_valid(raise_exception=True)
-        board = self.get_instance()
-        board.delete()
-
-        response_data = {"message": text.success_delete}
-        return Response(response_data, status=status.HTTP_200_OK)
+    serializer = serializers.BoardUpdateSerializers
+    serializer_response = serializers.BoardUpdateSerializersResponse
 
     def get_instance(self):
-        board_id = self.validated_data["board_id"]
-        team_id = self.validated_data["team_id"]
+        board_id = self.kwargs.get('board_id')
+        board = models.BoardModel.objects.filter(id=board_id).first()
 
-        board = models.BoardModel.objects.filter(id=board_id, team_id=team_id).first()
         if not board:
             raise exceptions.NotFoundBoard()
-
         return board
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_instance()
+        ser = self.serializer(instance, data=request.data, partial=True, context={'request': request})
+        ser.is_valid(raise_exception=True)
+        ser.save()
+
+        return Response({
+            'message': text.success_update,
+            'update_data': ser.data
+        }, status=200)
+
+
 
 
 

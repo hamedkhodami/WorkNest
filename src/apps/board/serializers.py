@@ -87,20 +87,45 @@ class DetailBoardSerializers(serializers.ModelSerializer):
         }
 
 
-class DeleteBoardSerializers(serializers.Serializer):
-    """
-     delete board serializers
-    """
-    board_id = serializers.UUIDField()
+class BoardDeleteSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
     team_id = serializers.UUIDField()
 
     def validate(self, attrs):
-        board_id = attrs.get('board_id')
-        team_id = attrs.get('team_id')
+        board_id = attrs.get("id")
+        team_id = attrs.get("team_id")
+        user = self.context["request"].user
 
         board = BoardModel.objects.filter(id=board_id, team_id=team_id).first()
         if not board:
             raise serializers.ValidationError({"detail": text.not_match})
 
+        if not hasattr(user, "team") or not user.team or user.team.id != team_id:
+            raise serializers.ValidationError({"detail": text.permission_denied})
+
         attrs["board"] = board
         return attrs
+
+
+class BoardUpdateSerializers(serializers.ModelSerializer):
+    """
+        update board serializers
+    """
+    class Meta:
+        model = BoardModel
+        fields = '__all__'
+        read_only_fields = ("team", "created_by")
+
+    def validate_title(self, value):
+        if BoardModel.objects.filter(title=value).exists():
+            raise serializers.ValidationError(text.registered_name)
+        return value
+
+
+class BoardUpdateSerializersResponse(serializers.Serializer):
+    """
+        update serializers response
+    """
+    message = serializers.CharField()
+    update_date = BoardUpdateSerializers()
+

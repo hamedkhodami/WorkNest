@@ -23,5 +23,3 @@
 ## Feature: 
 
 -  [ ] Add notification
--  [ ] test delete
--  [ ] add api update

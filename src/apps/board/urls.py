@@ -10,6 +10,7 @@ urlpatterns = [
     path('list-boards/', views.BoardsTeamsView.as_view(), name='boards_teams'),
     path('<uuid:board_uuid>/', views.DetailBoardView.as_view(), name='board-detail'),
     path("delete/", views.DeleteBoardView.as_view(), name="board-delete"),
+    path('<uuid:board_id>/update/', views.BoardUpdateViews.as_view(), name='board-update'),
 ]
 
 

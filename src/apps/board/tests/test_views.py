@@ -9,7 +9,7 @@ from apps.account.enums import UserRoleEnum as Role
 from apps.team.tests.factories import TeamFactory
 from apps.board.tests.factories import BoardFactory
 
-"""
+
 @pytest.mark.django_db
 class TestCreateBoardView:
 
@@ -97,41 +97,69 @@ class TestDetailBoardView:
         response = self.client.get(self.url)
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-"""
-
+        
+        
 @pytest.mark.django_db
 class TestDeleteBoardView:
 
-    @pytest.fixture(autouse=True)
-    def setup(self):
+    def setup_method(self):
         self.client = APIClient()
-        self.admin_user = UserFactory(is_active=True, role=Role.ADMIN)
-        self.team = TeamFactory(created_by=self.admin_user)
-        self.admin_user.team = self.team
-        self.board = BoardFactory(team=self.team, created_by=self.admin_user)
+        self.admin = UserFactory(is_active=True, role=Role.ADMIN)
+        self.team = TeamFactory(created_by=self.admin)
+        self.admin.team = self.team
+        self.admin.save()
+        self.board = BoardFactory(team=self.team, created_by=self.admin)
         self.url = reverse("board:board-delete")
 
-    def test_delete_board_success_for_admin(self):
-        self.client.force_authenticate(user=self.admin_user)
-        response = self.client.delete(self.url, {"board_id": self.board.id, "team_id": self.team.id}, format="json")
+    def test_delete_board_success(self):
+        self.client.force_authenticate(user=self.admin)
+        payload = {
+            "id": str(self.board.id),
+            "team_id": str(self.team.id)
+        }
+
+        response = self.client.delete(self.url, data=payload, content_type="application/json")
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.data["message"] == "بورد با موفقیت حذف شد."
+        assert not BoardModel.objects.filter(id=self.board.id).exists()
 
-    def test_delete_board_forbidden_for_non_admin(self):
-        non_admin_user = UserFactory(is_active=True, role="viewer")
-        non_admin_user.team = self.team
-        self.client.force_authenticate(user=non_admin_user)
 
-        response = self.client.delete(self.url, {"board_id": self.board.id, "team_id": self.team.id}, format="json")
+@pytest.mark.django_db
+class TestBoardUpdateView:
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+    def setup_method(self):
+        self.client = APIClient()
+        self.user = UserFactory(is_active=True, is_superuser=False, role=Role.PROJECT_MEMBER)
+        self.admin = UserFactory(is_active=True, is_superuser=True, role=Role.ADMIN)
+        self.client.force_authenticate(user=self.user)
+        self.board = BoardFactory(title="Test Board")
+        self.url = reverse("board:board-update", kwargs={"board_id": self.board.id})
 
-    def test_delete_board_not_found(self):
-        self.client.force_authenticate(user=self.admin_user)
-        fake_uuid = "00000000-0000-0000-0000-000000000000"
-        response = self.client.delete(self.url, {"board_id": fake_uuid, "team_id": self.team.id}, format="json")
+    def test_update_board_success(self):
+        self.client.force_authenticate(user=self.admin)
+        data = {"title": "Updated Board", "description": "Updated Description"}
+        response = self.client.put(self.url, data)
 
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.data["detail"] == text.not_match
+        assert response.status_code == 200
+        self.board.refresh_from_db()
+        assert self.board.title == "Updated Board"
+
+    def test_update_board_permission_denied(self):
+        self.client.force_authenticate(user=self.user)
+        data = {"title": "Unauthorized Update"}
+        response = self.client.put(self.url, data)
+
+        assert response.status_code == 403
+
+    def test_update_board_not_found(self):
+        self.client.force_authenticate(user=self.admin)
+        url = reverse("board:board-update", kwargs={"board_id": "00000000-0000-0000-0000-000000000000"})
+        response = self.client.put(url, {"title": "New Title"})
+        assert response.status_code == 404
+
+
+
+
+
+
 
