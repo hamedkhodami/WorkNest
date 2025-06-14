@@ -1,14 +1,11 @@
-from rest_framework import permissions, status
-from rest_framework.generics import ListAPIView
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions as base_permissions
 
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
 from apps.core import text
 from apps.account.auth import permissions as per
-from apps.account.models import User
 
 from . import models, exceptions, serializers
 

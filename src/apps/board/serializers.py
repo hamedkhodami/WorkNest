@@ -19,11 +19,6 @@ class CreateBoardSerializer(serializers.ModelSerializer):
         model = BoardModel
         fields = ['title', 'description']
 
-    def validate_name(self, value):
-        if BoardModel.objects.filter(title=value).exists():
-            raise serializers.ValidationError(text.registered_name)
-        return value
-
     def create(self, validated_data):
         request_user = self.context['request'].user
 
@@ -115,11 +110,6 @@ class BoardUpdateSerializers(serializers.ModelSerializer):
         model = BoardModel
         fields = '__all__'
         read_only_fields = ("team", "created_by")
-
-    def validate_title(self, value):
-        if BoardModel.objects.filter(title=value).exists():
-            raise serializers.ValidationError(text.registered_name)
-        return value
 
 
 class BoardUpdateSerializersResponse(serializers.Serializer):

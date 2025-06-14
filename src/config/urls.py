@@ -39,6 +39,7 @@ urlpatterns = [
     path('account/', include('apps.account.urls', namespace='account')),
     path('team/', include('apps.team.urls', namespace='team')),
     path('board/', include('apps.board.urls', namespace='board')),
+    path('task/', include('apps.task.urls', namespace='task')),
 
     dj_path('rosetta/', include('rosetta.urls')),
 

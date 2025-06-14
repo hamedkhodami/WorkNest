@@ -30,6 +30,9 @@ class BoardModel(BaseModel):
         verbose_name = _("Board")
         verbose_name_plural = _("Boards")
 
+    def __str__(self):
+        return self.title
+
     def archive_board(self):
         if not self.is_archived:
             self.is_archived = True

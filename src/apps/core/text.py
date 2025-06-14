@@ -106,4 +106,13 @@ reject_invitations = _('Reject_invitations')
 
 not_team = _('This User have not team')
 
+archive_board = _('This board archived')
+
+restore_board = _('This User restored')
+
+# ----
+
+
+# --task--
+
 # ----

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.account.apps.AccountConfig',
     'apps.team.apps.TeamConfig',
     'apps.board.apps.BoardConfig',
+    'apps.task.apps.TaskConfig',
 ]
 
 MIDDLEWARE = [
