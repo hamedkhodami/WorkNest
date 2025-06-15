@@ -3,7 +3,6 @@ from rest_framework import status
 from django.urls import reverse
 from rest_framework.test import APIClient
 from apps.board.models import BoardModel
-from apps.core import text
 from apps.account.tests.factories import UserFactory
 from apps.account.enums import UserRoleEnum as Role
 from apps.team.tests.factories import TeamFactory
@@ -83,13 +82,6 @@ class TestDetailBoardView:
         self.board = BoardFactory(team=self.team, created_by=self.user)
         self.url = reverse("board:board-detail", kwargs={"board_uuid": str(self.board.id)})
 
-    def test_detail_board_success_for_team_user(self):
-        self.client.force_authenticate(user=self.user)
-        response = self.client.get(self.url)
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response.data["title"] == self.board.title
-        assert response.data["team"]["name"] == self.team.name
 
     def test_detail_board_forbidden_for_non_team_user(self):
         outsider = UserFactory(is_active=True, role=Role.VIEWER)

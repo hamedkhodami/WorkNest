@@ -6,5 +6,5 @@ app_name = 'apps.task'
 
 
 urlpatterns = [
-
+    path('create/', views.TaskCreationView.as_view(), name='task-create'),
 ]

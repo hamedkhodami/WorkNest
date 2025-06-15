@@ -44,7 +44,7 @@ class BasePermissionAnyCustom(BasePermissionCustom):
         return [perm.get_role() for perm in cls.permission_classes_any]
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class IsAdmin(BasePermissionCustom):
@@ -63,7 +63,7 @@ class IsViewer(BasePermissionCustom):
     user_role = UserRoleEnum.VIEWER
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 class IsAdminOrProjectAdmin(BasePermissionAnyCustom):
     permission_classes_any = [IsAdmin, IsProjectAdmin]
@@ -96,7 +96,7 @@ class IsAdminOrMember(BasePermissionAnyCustom):
     def repr(cls):
         return 'Admin or Project Member'
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class IsOwnerOrAdmin(BasePermissionAnyCustom):
@@ -108,3 +108,4 @@ class IsOwnerOrAdmin(BasePermissionAnyCustom):
         if IsAdminOrProjectAdmin().has_permission(request, view):
             return True
         return obj.user == request.user
+

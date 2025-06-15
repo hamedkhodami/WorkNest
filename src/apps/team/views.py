@@ -8,6 +8,7 @@ from rest_framework import permissions as base_permissions
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
 from apps.core import text
+from apps.core.services.access_control import is_team_member
 from apps.account.auth import permissions as per
 from apps.account.models import User
 
@@ -83,7 +84,7 @@ class TeamUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
         if not team:
             raise exceptions.NotFoundTeam
 
-        self.check_permissions(self.request)
+        is_team_member(self.request.user, team)
 
         return team
 
@@ -248,7 +249,14 @@ class RemoveTeamMemberView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView)
 
         user_id = self.validated_data['user_id']
         team_id = self.validated_data['team_id']
-        return models.TeamMembership.objects.get(user_id=user_id, team_id=team_id)
+        team_membership = models.TeamMembership.objects.get(user_id=user_id, team_id=team_id)
+
+        if not team_membership:
+            raise exceptions.NotFoundTeam
+
+        is_team_member(self.request.user, team_membership.team)
+
+        return team_membership
 
 
 

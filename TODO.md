@@ -16,6 +16,7 @@
 
 -  [ ] Add notification
 -  [ ] check roles
+-  [ ] change team creation
 
 
 # TODOs – Board App
@@ -23,10 +24,11 @@
 ## Feature: 
 
 -  [ ] Add notification
+-  [ ] check show archived board in detail board
  
 
 # TODOs – Task App
 
 ## Feature: 
 
--  [ ] 
+-  [ ] search ()

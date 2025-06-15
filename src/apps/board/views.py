@@ -4,8 +4,10 @@ from rest_framework.views import APIView
 
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
+from apps.core.services.access_control import is_team_member
 from apps.core import text
 from apps.account.auth import permissions as per
+from apps.team.models import TeamModel
 
 from . import models, exceptions, serializers
 
@@ -22,6 +24,11 @@ class CreateBoardView(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
     serializer_response = serializers.CreateBoardSerializerResponse
 
     def post(self, request, *args, **kwargs):
+        team_id = request.data.get("team_id")
+        team = TeamModel.objects.filter(id=team_id).first()
+
+        is_team_member(request.user, team)
+
         response_data = self.create(request, response=False, *args, **kwargs)
         return Response(response_data, status=status.HTTP_201_CREATED)
 
@@ -70,6 +77,7 @@ class DetailBoardView(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
         board = models.BoardModel.objects.filter(id=board_uuid).first()
         if not board:
             raise exceptions.NotFoundTeam()
+        is_team_member(self.request.user, board.team)
         return board
 
 
@@ -91,7 +99,10 @@ class DeleteBoardView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
         serializer = self.serializer(data=self.request.data, context={"request": self.request})
         serializer.is_valid(raise_exception=True)
         self.validated_data = serializer.validated_data
-        return self.validated_data["board"]
+        board = self.validated_data["board"]
+        is_team_member(self.request.user, board.team)
+
+        return board
 
 
 class BoardUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
@@ -108,9 +119,9 @@ class BoardUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
     def get_instance(self):
         board_id = self.kwargs.get('board_id')
         board = models.BoardModel.objects.filter(id=board_id).first()
-
         if not board:
             raise exceptions.NotFoundBoard()
+        is_team_member(self.request.user, board.team)
         return board
 
     def put(self, request, *args, **kwargs):

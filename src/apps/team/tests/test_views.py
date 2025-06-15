@@ -119,7 +119,7 @@ class TestTeamUpdateView:
     def setup_method(self):
         self.client = APIClient()
         self.user = UserFactory(is_active=True, is_superuser=False, role=Role.PROJECT_MEMBER)
-        self.admin = UserFactory(is_active=True, is_superuser=True,role=Role.ADMIN)
+        self.admin = UserFactory(is_active=True, is_superuser=True, role=Role.ADMIN)
         self.client.force_authenticate(user=self.user)
         self.team = TeamFactory(name="Test Team")
         self.url = reverse("team:team-update", kwargs={"team_id": self.team.id})
