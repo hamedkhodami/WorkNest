@@ -74,11 +74,11 @@ class IsAdminOrProjectAdmin(BasePermissionAnyCustom):
 
 
 class IsTeamUser(BasePermissionAnyCustom):
-    permission_classes_any = [IsProjectAdmin, IsProjectMember]
+    permission_classes_any = [IsProjectAdmin, IsProjectMember, IsAdmin]
 
     @classmethod
     def repr(cls):
-        return 'Team user (project_admin or project_member)'
+        return 'Team user (project_admin or project_member or admin)'
 
 
 class IsAdminOrViewer(BasePermissionAnyCustom):

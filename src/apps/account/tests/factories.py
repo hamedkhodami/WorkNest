@@ -21,5 +21,7 @@ class UserFactory(factory.django.DjangoModelFactory):
         project_admin = factory.Trait(role=UserRoleEnum.PROJECT_ADMIN, is_superuser=False, is_staff=True)
         project_member = factory.Trait(role=UserRoleEnum.PROJECT_MEMBER, is_superuser=False, is_staff=False)
         viewer = factory.Trait(role=UserRoleEnum.VIEWER, is_superuser=False, is_staff=False)
+        team_user = factory.Trait(
+            role=factory.Iterator([UserRoleEnum.ADMIN, UserRoleEnum.PROJECT_ADMIN, UserRoleEnum.PROJECT_MEMBER]))
 
 

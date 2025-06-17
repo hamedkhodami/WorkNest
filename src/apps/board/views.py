@@ -90,13 +90,13 @@ class DeleteBoardView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
     swagger_tags = ["Board"]
     permission_classes = (per.IsAdminOrProjectAdmin,)
 
-    serializer = serializers.BoardDeleteSerializer
+    serializer_response = serializers.BoardDeleteSerializer
 
     def delete(self, request, *args, **kwargs):
         return self.delete_instance(request)
 
     def get_instance(self):
-        serializer = self.serializer(data=self.request.data, context={"request": self.request})
+        serializer = self.serializer_response(data=self.request.data, context={"request": self.request})
         serializer.is_valid(raise_exception=True)
         self.validated_data = serializer.validated_data
         board = self.validated_data["board"]

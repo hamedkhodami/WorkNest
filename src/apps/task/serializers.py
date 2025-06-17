@@ -38,3 +38,38 @@ class TaskListCreateSerializersResponse(serializers.ModelSerializer):
         fields = ['title', 'description', 'board_title']
 
 
+class TaskDeleteSerializer(serializers.Serializer):
+    """
+        serializer delete task
+    """
+    id = serializers.UUIDField()
+    board_id = serializers.UUIDField()
+
+    def validate(self, attrs):
+        tasklist_id = attrs.get('id')
+        board_id = attrs.get('board_id')
+
+        tasklist = get_object_or_404(models.TaskListModel, id=tasklist_id, board_id=board_id)
+
+        if not tasklist:
+            raise serializers.ValidationError({'detail': text.not_match})
+
+        if not tasklist.board:
+            raise serializers.ValidationError({'detail': text.tasklist_not_board})
+
+        attrs['tasklist'] = tasklist
+        return attrs
+
+
+class TaskListsSerializer(serializers.ModelSerializer):
+    """
+     serializers list of all tasklist
+    """
+    id = serializers.UUIDField(read_only=True)
+    board_uuid = serializers.UUIDField(source="board.id", read_only=True)
+    title = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = models.TaskListModel
+        fields = ['id', 'board_uuid', 'title']
+

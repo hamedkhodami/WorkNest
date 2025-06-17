@@ -15,12 +15,10 @@ class TestTaskCreationView:
 
     @pytest.fixture(autouse=True)
     def setup(self, db):
-        """ تنظیمات اولیه تست‌ها """
         self.client = APIClient()
         self.user = UserFactory(is_active=True, role="admin")
         self.team = TeamFactory(created_by=self.user)
 
-        # ایجاد عضویت کاربر در تیم
         TeamMembershipFactory(user=self.user, team=self.team)
 
         self.client.force_authenticate(user=self.user)
@@ -62,3 +60,92 @@ class TestTaskCreationView:
         assert response.status_code == status.HTTP_400_BAD_REQUEST  # حالا مقدار صحیح بررسی می‌شود
         assert "error" in response.data
 
+
+@pytest.mark.django_db
+class TestTaskListDeleteView:
+
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
+        self.client = APIClient()
+        self.user = UserFactory(is_active=True, role="admin")
+        self.team = TeamFactory(created_by=self.user)
+        self.board = BoardFactory(team=self.team)
+        self.tasklist = TaskListFactory(board=self.board)
+
+        TeamMembershipFactory(user=self.user, team=self.team)
+
+        self.client.force_authenticate(user=self.user)
+        self.url = reverse("task:task-delete")
+
+    def test_delete_task_list_success(self):
+        response = self.client.delete(
+            self.url,
+            {
+                "id": str(self.tasklist.id),
+                "board_id": str(self.board.id)
+            },
+            format="json"
+        )
+
+        assert not TaskListFactory._meta.model.objects.filter(id=self.tasklist.id).exists()
+
+    def test_delete_task_list_not_found(self):
+        response = self.client.delete(
+            self.url,
+            {
+                "id": "00000000-0000-0000-0000-000000000000",  # مقدار نامعتبر
+                "board_id": str(self.board.id)
+            },
+            format="json"
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_task_list_without_board(self):
+        response = self.client.delete(
+            self.url,
+            {
+                "id": str(self.tasklist.id)
+            },
+            format="json"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "board_id" in response.data["error"]  # بررسی مقدار داخل `error`
+
+
+@pytest.mark.django_db
+class TestTaskListsView:
+
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
+        self.client = APIClient()
+        self.user = UserFactory(is_active=True, team_user=True)
+        self.team = TeamFactory(created_by=self.user)
+        self.board = BoardFactory(team=self.team)
+        self.tasklist_1 = TaskListFactory(board=self.board)
+        self.tasklist_2 = TaskListFactory(board=self.board)
+
+        TeamMembershipFactory(user=self.user, team=self.team)
+
+        self.client.force_authenticate(user=self.user)
+        self.url = reverse("task:task-list")
+
+    def test_get_task_lists_success(self):
+        response = self.client.get(self.url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data["data"]) == 2
+        assert response.data["data"][0]["uuid"] == str(self.tasklist_1.uuid)
+        assert response.data["data"][1]["uuid"] == str(self.tasklist_2.uuid)
+
+    def test_get_task_lists_filtered_by_board(self):
+        response = self.client.get(self.url, {"board_id": str(self.board.id)})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data["data"]) == 2
+
+    def test_get_task_lists_with_invalid_board(self):
+        response = self.client.get(self.url, {"board_id": "00000000-0000-0000-0000-000000000000"})
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND

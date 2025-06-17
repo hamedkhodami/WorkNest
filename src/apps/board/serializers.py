@@ -89,14 +89,10 @@ class BoardDeleteSerializer(serializers.Serializer):
     def validate(self, attrs):
         board_id = attrs.get("id")
         team_id = attrs.get("team_id")
-        user = self.context["request"].user
 
         board = BoardModel.objects.filter(id=board_id, team_id=team_id).first()
         if not board:
             raise serializers.ValidationError({"detail": text.not_match})
-
-        if not hasattr(user, "team") or not user.team or user.team.id != team_id:
-            raise serializers.ValidationError({"detail": text.permission_denied})
 
         attrs["board"] = board
         return attrs
