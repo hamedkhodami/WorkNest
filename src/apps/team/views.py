@@ -12,7 +12,7 @@ from apps.core.services.access_control import is_team_member
 from apps.account.auth import permissions as per
 from apps.account.models import User
 
-from . import models, exceptions, serializers, enums
+from . import models, serializers, enums, exceptions
 from .service.create_membership import create_membership_if_accepted
 
 
@@ -82,7 +82,7 @@ class TeamUpdateViews(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
         team = models.TeamModel.objects.filter(id=team_id).first()
 
         if not team:
-            raise exceptions.NotFoundTeam
+            raise exceptions.NotFoundTeam()
 
         is_team_member(self.request.user, team)
 
@@ -252,7 +252,7 @@ class RemoveTeamMemberView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView)
         team_membership = models.TeamMembership.objects.get(user_id=user_id, team_id=team_id)
 
         if not team_membership:
-            raise exceptions.NotFoundTeam
+            raise exceptions.NotFoundTeam()
 
         is_team_member(self.request.user, team_membership.team)
 

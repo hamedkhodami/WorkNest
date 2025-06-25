@@ -80,7 +80,7 @@ class TestDetailBoardView:
         self.team = TeamFactory(created_by=self.user)
         self.user.team = self.team
         self.board = BoardFactory(team=self.team, created_by=self.user)
-        self.url = reverse("board:board-detail", kwargs={"board_uuid": str(self.board.id)})
+        self.url = reverse("board:board-detail", kwargs={"board_id": str(self.board.id)})
 
 
     def test_detail_board_forbidden_for_non_team_user(self):

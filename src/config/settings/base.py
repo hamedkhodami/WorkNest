@@ -51,6 +51,11 @@ INSTALLED_APPS = [
     'apps.team.apps.TeamConfig',
     'apps.board.apps.BoardConfig',
     'apps.task.apps.TaskConfig',
+    'apps.notification.apps.NotificationConfig',
+    'apps.logbook.apps.LogbookConfig',
+    'apps.chat.apps.ChatConfig',
+    'apps.report.apps.ReportConfig',
+    'apps.public.apps.PublicConfig',
 ]
 
 MIDDLEWARE = [
@@ -259,3 +264,22 @@ CACHES = {
 # --ROSETTA------------------------------------------------------
 ROSETTA_ACCESS_CONTROL_FUNCTION = lambda u: u.is_staff
 # ---------------------------------------------------------------
+
+
+# ---Email-------------------------------------------------------
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+# ----------------------------------------------------------------
+
+
+# ---SMS config---------------------------------------------------
+SMS_CONFIG = {
+    'API_KEY': os.getenv('SMS_CONFIG_API_KEY'),
+    'ORIGINATOR': os.getenv('SMS_CONFIG_ORIGINATOR')
+}
+# ----------------------------------------------------------------

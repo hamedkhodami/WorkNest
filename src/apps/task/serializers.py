@@ -1,13 +1,14 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
-import uuid
+from django.contrib.auth import get_user_model
 
 from apps.core import text
 from apps.board.models import BoardModel
-from . import models, exceptions, enums
+from . import models, enums
 
 
 Priority = enums.TaskPriorityEnum
+User = get_user_model()
 
 
 class TaskListCreateSerializer(serializers.ModelSerializer):
@@ -38,7 +39,7 @@ class TaskListCreateSerializersResponse(serializers.ModelSerializer):
         fields = ['title', 'description', 'board_title']
 
 
-class TaskDeleteSerializer(serializers.Serializer):
+class TaskListDeleteSerializer(serializers.Serializer):
     """
         serializer delete task
     """
@@ -72,4 +73,89 @@ class TaskListsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TaskListModel
         fields = ['id', 'board_uuid', 'title']
+
+
+class TaskListDetailSerializer(serializers.ModelSerializer):
+    """
+        detail tasklist serializers
+    """
+    class Meta:
+        model = models.TaskListModel
+        fields = ['title', 'description', 'order']
+
+
+class TaskUpdateSerializer(serializers.ModelSerializer):
+    """
+        serializers to update task
+    """
+    class Meta:
+        model = models.TaskModel
+        fields = '__all__'
+        read_only_fields = ("task_list", "assignee")
+
+
+class TaskUpdateResponseSerializers(serializers.ModelSerializer):
+    """
+        serializer response to update task
+    """
+    message = serializers.CharField()
+    update_date = TaskUpdateSerializer()
+
+
+class TaskDetailSerializer(serializers.ModelSerializer):
+    """
+        detail task serializers
+    """
+    task_list = serializers.SerializerMethodField()
+    assignee = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.TaskModel
+        fields = ['title', 'description', 'is_done', 'deadline', 'priority', 'task_list', 'assignee']
+
+    def get_task_list(self, obj):
+        return {"name": obj.task_list.title}
+
+    def get_assignee(self, obj):
+        return {"name": obj.assignee.full_name() if obj.assignee else None}
+
+
+class AdminCreateTaskSerializer(serializers.ModelSerializer):
+    """
+    ادمین برای یک کاربر وظیفه جدید می‌سازد و آن را به یک لیست مرتبط می‌کند.
+    """
+    assignee = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    task_list = serializers.PrimaryKeyRelatedField(queryset=models.TaskListModel.objects.all())
+
+    class Meta:
+        model = models.TaskModel
+        fields = [
+            'title',
+            'description',
+            'deadline',
+            'priority',
+            'task_list',
+            'assignee'
+        ]
+
+
+class RemoveTaskSerializer(serializers.Serializer):
+    """
+       serializers remove user from tasklist
+    """
+    id = serializers.UUIDField()
+    task_list_id = serializers.UUIDField()
+
+    def validate(self, attrs):
+        task_id = attrs.get('id')
+        task_list_id = attrs.get('task_list_id')
+
+        task = get_object_or_404(models.TaskModel, id=task_id, task_list_id=task_list_id)
+
+        if not task:
+            raise serializers.ValidationError({'detail': text.not_match})
+
+        attrs['task'] = task
+        return attrs
+
 

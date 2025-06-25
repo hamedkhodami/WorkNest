@@ -115,4 +115,6 @@ restore_board = _('This User restored')
 
 # --task--
 tasklist_not_board = _('TaskList is not linked to a valid board')
+
+add_task_user = _('Added task to user')
 # ----

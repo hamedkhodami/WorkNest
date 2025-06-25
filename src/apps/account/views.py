@@ -86,13 +86,13 @@ class LoginOTP(APIView):
         try:
             user = User.objects.get(phone_number=phone_number, is_active=True)
         except ObjectDoesNotExist:
-            raise exceptions.UserNotFound
+            raise exceptions.UserNotFound()
 
         conf = settings.LOGIN_OTP_CONFIG
         user_key = conf['STORE_BY'].format(phone_number)
 
         if redis_utils.get_value(user_key):
-            raise exceptions.CodeHasAlreadyBeenSent
+            raise exceptions.CodeHasAlreadyBeenSent()
 
         otp_code = utils.random_num(conf['CODE_LENGTH'])
         redis_utils.set_value_expire(user_key, otp_code, conf['TIMEOUT'])
@@ -121,14 +121,14 @@ class LoginOTP(APIView):
         try:
             user = User.objects.get(phone_number=phone_number, is_active=True)
         except ObjectDoesNotExist:
-            raise exceptions.UserNotFound
+            raise exceptions.UserNotFound()
 
         conf = settings.LOGIN_OTP_CONFIG
         user_key = conf['STORE_BY'].format(phone_number)
 
         code = redis_utils.get_value(user_key)
         if not code or code != user_code:
-            raise exceptions.CodeIsWrong
+            raise exceptions.CodeIsWrong()
 
         redis_utils.remove_key(user_key)
 
@@ -189,7 +189,7 @@ class Register(ms.SwaggerViewMixin, APIView):
         #check key
         redis_otp = redis_utils.get_value(user_key)
         if not redis_otp or redis_otp != otp_code:
-            raise exceptions.CodeIsWrong
+            raise exceptions.CodeIsWrong()
 
         # create user
         user = ser.save()
@@ -226,7 +226,7 @@ class ResetPassword(ms.SwaggerViewMixin, APIView):
         try:
             user = User.objects.get(phone_number=phone_number)
         except User.DoesNotExist:
-            raise exceptions.UserNotFound
+            raise exceptions.UserNotFound()
 
         conf = settings.RESET_PASSWORD_CONFIG
         user_key = conf['STORE_BY'].format(phone_number)
@@ -234,7 +234,7 @@ class ResetPassword(ms.SwaggerViewMixin, APIView):
         # check user request(if have previous request)
         if redis_utils.get_value(user_key):
             # reset code has already been sent
-            raise exceptions.CodeHasAlreadyBeenSent
+            raise exceptions.CodeHasAlreadyBeenSent()
 
         # generate and set code on redis
         reset_code = utils.random_num(conf['CODE_LENGTH'])
@@ -267,7 +267,7 @@ class ResetPasswordCheckAndSet(ms.SwaggerViewMixin, APIView):
         try:
             user = User.objects.get(phone_number=phone_number)
         except User.DoesNotExist:
-            raise exceptions.UserNotFound
+            raise exceptions.UserNotFound()
 
         conf = settings.RESET_PASSWORD_CONFIG
         user_key = conf['STORE_BY'].format(phone_number)
@@ -276,11 +276,11 @@ class ResetPasswordCheckAndSet(ms.SwaggerViewMixin, APIView):
         code = redis_utils.get_value(user_key)
         if not code:
             # reset code not match(is wrong)
-            raise exceptions.CodeIsWrong
+            raise exceptions.CodeIsWrong()
 
         if not code == user_code:
             # reset code not match(is wrong)
-            raise exceptions.CodeIsWrong
+            raise exceptions.CodeIsWrong()
 
         # clear key
         redis_utils.remove_key(user_key)
@@ -319,7 +319,7 @@ class ConfirmPhoneNumber(APIView):
         # check code request(if have previous request)
         if redis_utils.get_value(user_key):
             # confirm code has already been sent
-            raise exceptions.CodeHasAlreadyBeenSent
+            raise exceptions.CodeHasAlreadyBeenSent()
 
         code = utils.random_num(conf['CODE_LENGTH'])
 
@@ -351,11 +351,11 @@ class ConfirmPhoneNumber(APIView):
 
         if not code:
             # confirm code is not exists
-            raise exceptions.CodeIsWrong
+            raise exceptions.CodeIsWrong()
 
         if not code == user_code:
             # confirm code is not match(is wrong)
-            raise exceptions.CodeIsWrong
+            raise exceptions.CodeIsWrong()
 
         # clear key
         redis_utils.remove_key(user_key)
@@ -388,7 +388,7 @@ class UserSendOTP(ms.SwaggerViewMixin, APIView):
         try:
             user = models.User.objects.available_users.get(phone_number=phone_number)
             if request.data.get('request_type') == 'register':
-                raise exceptions.UserIsExists
+                raise exceptions.UserIsExists()
         except models.User.DoesNotExist:
             pass  # اگر کاربر وجود نداشت، ادامه فرآیند ارسال OTP
 
@@ -397,7 +397,7 @@ class UserSendOTP(ms.SwaggerViewMixin, APIView):
 
         # check key(code)
         if redis_utils.get_value(user_key):
-            raise exceptions.CodeHasAlreadyBeenSent
+            raise exceptions.CodeHasAlreadyBeenSent()
 
         # generate and set code on redis
         otp_code = utils.random_num(conf['CODE_LENGTH'])
@@ -433,7 +433,7 @@ class UserCreate(ms.SwaggerViewMixin, APIView):
         user_phone_number = validated_data['phone_number']
         user_key = conf['STORE_BY'].format(user_phone_number)
         if not redis_utils.get_value(user_key) == otp_code:
-            raise exceptions.CodeIsWrong
+            raise exceptions.CodeIsWrong()
 
         # clear otp key
         redis_utils.remove_key(user_key)
@@ -463,10 +463,10 @@ class UserDelete(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
             user_id = self.kwargs['user_id']
             return User.base_objects.available_users.get(id=user_id)
         except (User.DoesNotExist, ValidationError):
-            raise exceptions.UserNotFound
+            raise exceptions.UserNotFound()
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class UserBlock(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
@@ -488,7 +488,7 @@ class UserBlock(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
         try:
             user = User.base_objects.available_users.get(id=user_id)
         except (User.DoesNotExist,):
-            raise exceptions.UserNotFound
+            raise exceptions.UserNotFound()
         return {
             'user': user.id,
             'admin': self.request.user.id
@@ -513,7 +513,7 @@ class UserUnBlock(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
             user = User.base_objects.available_users.get(id=user_id)
             return user.userblock
         except ObjectDoesNotExist:
-            raise exceptions.UserIsNotBlocked
+            raise exceptions.UserIsNotBlocked()
 
 
 class UserBlockDetail(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
@@ -534,10 +534,10 @@ class UserBlockDetail(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
             user = User.base_objects.available_users.get(id=user_id)
             return user.userblock
         except ObjectDoesNotExist:
-            raise exceptions.UserIsNotBlocked
+            raise exceptions.UserIsNotBlocked()
 
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class ProfileListView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):

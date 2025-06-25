@@ -8,6 +8,7 @@
 - [ ] Add notification
 - [ ] change serializers profile
 - [ ] role in model
+- [ ] role owner
 
 
 # TODOs – Team App
@@ -31,4 +32,4 @@
 
 ## Feature: 
 
--  [ ] search ()
+-  [ ] completed test detail tasklist

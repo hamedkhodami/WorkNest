@@ -73,8 +73,8 @@ class DetailBoardView(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
         return self.detail(request)
 
     def get_instance(self):
-        board_uuid = self.kwargs.get('board_uuid')
-        board = models.BoardModel.objects.filter(id=board_uuid).first()
+        board_id = self.kwargs.get('board_id')
+        board = models.BoardModel.objects.filter(id=board_id).first()
         if not board:
             raise exceptions.NotFoundTeam()
         is_team_member(self.request.user, board.team)

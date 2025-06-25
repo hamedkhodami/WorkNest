@@ -31,9 +31,6 @@ class TaskListModel(BaseModel):
     def get_tasks(self):
         return self.tasks.all()
 
-    def get_incomplete_task(self):
-        return self.tasks.filter(is_done=False)
-
 
 class TaskModel(BaseModel):
     task_list = models.ForeignKey(TaskListModel, verbose_name=_('Task list'),
@@ -43,13 +40,11 @@ class TaskModel(BaseModel):
     title = models.CharField(_('Title'), max_length=128)
     description = models.TextField(_('Description'), blank=True, null=True)
     is_done = models.BooleanField(_('Is done'), default=False)
-    order = models.PositiveIntegerField(_('Order'), default=0, db_index=True)
     deadline = models.DateTimeField(_('Deadline'), null=True, blank=True)
     completed_at = models.DateTimeField(_('Completed at'), null=True, blank=True)
     priority = models.CharField(_('Priority'), choices=Priority, default=Priority.MEDIUM)
 
     class Meta:
-        ordering = ['order']
         verbose_name = _("Task")
         verbose_name_plural = _("Tasks")
 

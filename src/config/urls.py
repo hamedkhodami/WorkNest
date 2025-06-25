@@ -40,6 +40,11 @@ urlpatterns = [
     path('team/', include('apps.team.urls', namespace='team')),
     path('board/', include('apps.board.urls', namespace='board')),
     path('task/', include('apps.task.urls', namespace='task')),
+    path('notification/', include('apps.notification.urls', namespace='notification')),
+    path('logbook/', include('apps.logbook.urls', namespace='logbook')),
+    path('chat/', include('apps.chat.urls', namespace='chat')),
+    path('report/', include('apps.report.urls', namespace='report')),
+    path('public/', include('apps.public.urls', namespace='public')),
 
     dj_path('rosetta/', include('rosetta.urls')),
 
@@ -49,3 +54,4 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
