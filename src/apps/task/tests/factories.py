@@ -26,7 +26,6 @@ class TaskFactory(factory.django.DjangoModelFactory):
     title = factory.Faker("sentence", nb_words=4)
     description = factory.Faker("paragraph")
     is_done = factory.Faker("boolean")
-    order = factory.Sequence(lambda n: n)
     deadline = factory.Faker("date_time_between", start_date="-30d", end_date="+30d")
     completed_at = factory.LazyAttribute(lambda obj: obj.deadline if obj.is_done else None)
     priority = factory.Iterator([Priority.LOW, Priority.MEDIUM, Priority.HIGH, Priority.CRITICAL])

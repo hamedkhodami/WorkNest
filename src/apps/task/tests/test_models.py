@@ -1,5 +1,5 @@
 import pytest
-from ....apps.task.tests.factories import TaskListFactory, TaskFactory
+from apps.task.tests.factories import TaskListFactory, TaskFactory
 from django.utils.timezone import now, timedelta
 
 from apps.task import enums
@@ -32,7 +32,6 @@ class TestTaskModel:
     def test_create_task(self):
         task = TaskFactory()
         assert task.title is not None
-        assert task.order >= 0
         assert task.priority in Priority.values
 
     def test_mark_as_done(self):
