@@ -33,3 +33,10 @@
 ## Feature: 
 
 -  [ ] completed test detail tasklist
+-  [ ] completed at
+
+# TODOs – LogBook App
+
+## Feature: 
+
+-  [ ] Replace this direct call with `create_log_entry.delay(...)` in phase 3

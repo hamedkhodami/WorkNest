@@ -22,6 +22,10 @@ class TaskListCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         team_id = self.context['request'].data.get("team_id")
         board = get_object_or_404(BoardModel, team_id=team_id)
+
+        if board.is_archived:
+            raise serializers.ValidationError({"detail": text.is_archived_board})
+
         last_task_list = models.TaskListModel.objects.filter(board=board).order_by("-order").first()
         validated_data['order'] = (last_task_list.order + 1) if last_task_list else 1
         validated_data['board'] = board
