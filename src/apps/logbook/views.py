@@ -1,3 +1,6 @@
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -19,6 +22,7 @@ class LogEntryListView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
     swagger_tags = ["LogBook"]
     permission_classes = (per.IsTeamUser,)
     serializer = serializers.LogEntrySerializer
+    serializer_response = serializers.LogEntryListResponseSerializer
     page_size = 20
 
     def get_queryset(self):
@@ -44,6 +48,73 @@ class LogEntryListView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
         if isinstance(response_data, Response):
             return response_data
 
-        return Response({"data": response_data}, status=status.HTTP_200_OK)
+        return Response({
+            "data": response_data.get("results", response_data)
+        })
 
 
+class LogbookStatsDashboardView(ms.SwaggerViewMixin, APIView):
+    """
+    Dashboard view for log analytics:
+    - Activity per day
+    - Top active users
+    - Most updated boards
+    """
+    swagger_title = "Dashboard Logbook"
+    swagger_tags = ["LogBook"]
+    permission_classes = (per.IsTeamUser,)
+    serializer_class = serializers.LogbookStatsDashboardSerializer
+
+    def get(self, request):
+        team_id = request.query_params.get("team")
+        logs = models.LogEntryModel.objects.all()
+
+        if team_id:
+            logs = logs.filter(team_id=team_id)
+            is_team_member(request.user, team_id)
+
+        activity_trend = (
+            logs.annotate(date=TruncDate("created_at"))
+            .values("date")
+            .annotate(count=Count("id"))
+            .order_by("-date")[:10]
+        )
+
+        top_actors = (
+            logs.values("actor__id", "actor__email")
+            .annotate(activity_count=Count("id"))
+            .order_by("-activity_count")[:5]
+        )
+
+        popular_boards = (
+            logs.values("board__id", "board__title", "team__id")
+            .annotate(activity_count=Count("id"))
+            .order_by("-activity_count")[:5]
+        )
+
+        data = {
+            "activity_trend": [
+                {"date": row["date"], "count": row["count"]}
+                for row in activity_trend
+            ],
+            "top_actors": [
+                {
+                    "user_id": row["actor__id"],
+                    "email": row["actor__email"],
+                    "activity_count": row["activity_count"],
+                }
+                for row in top_actors
+            ],
+            "popular_boards": [
+                {
+                    "board_id": row["board__id"],
+                    "board_title": row["board__title"],
+                    "team_id": row["team__id"],
+                    "activity_count": row["activity_count"],
+                }
+                for row in popular_boards
+            ],
+        }
+
+        serializer = self.serializer_class(data)
+        return Response(serializer.data)

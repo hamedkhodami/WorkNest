@@ -40,3 +40,10 @@
 ## Feature: 
 
 -  [ ] Replace this direct call with `create_log_entry.delay(...)` in phase 3
+# TODOs – LogBook App
+
+## Feature:
+
+- [ ] Replace this direct call with `create_log_entry.delay(...)` in phase 3
+- [ ] Notification System
+

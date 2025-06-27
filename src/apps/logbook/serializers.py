@@ -24,3 +24,31 @@ class LogEntrySerializer(serializers.ModelSerializer):
             'created_at',
         ]
         read_only_fields = fields
+
+
+class LogEntryListResponseSerializer(serializers.Serializer):
+    data = LogEntrySerializer(many=True)
+
+
+class ActivityPerDaySerializer(serializers.Serializer):
+    date = serializers.DateField()
+    count = serializers.IntegerField()
+
+
+class TopActorSerializer(serializers.Serializer):
+    user_id = serializers.UUIDField()
+    email = serializers.EmailField()
+    activity_count = serializers.IntegerField()
+
+
+class PopularBoardSerializer(serializers.Serializer):
+    board_id = serializers.UUIDField()
+    board_title = serializers.CharField()
+    team_id = serializers.UUIDField()
+    activity_count = serializers.IntegerField()
+
+
+class LogbookStatsDashboardSerializer(serializers.Serializer):
+    activity_trend = ActivityPerDaySerializer(many=True)
+    top_actors = TopActorSerializer(many=True)
+    popular_boards = PopularBoardSerializer(many=True)
