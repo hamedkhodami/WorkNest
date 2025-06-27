@@ -121,3 +121,9 @@ add_task_user = _('Added task to user')
 is_archived_board = _('It is not possible to create a list for an archived win.')
 
 # ----
+
+
+# --chat--
+two_user_in_room = _('Room must be created between exactly two users.')
+
+# ----

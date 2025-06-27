@@ -14,7 +14,7 @@ from apps.core.validators import OnlyPersianCharsValidator
 from apps.core.utils import random_num, get_coded_phone_number
 from apps.core.models import BaseModel
 
-from .enums import UserRoleEnum,UserGenderEnum
+from .enums import UserRoleEnum, UserGenderEnum
 from apps.core import text
 from .auth.utils import is_melli_code
 
