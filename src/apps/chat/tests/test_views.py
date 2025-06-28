@@ -73,14 +73,11 @@ class TestUnreadRoomListView:
         opponent = UserFactory()
         other_user = UserFactory()
 
-        # ساخت Room بین user و opponent
         room1 = ChatRoomModel.objects.create()
         room1.participants.set([user, opponent])
 
-        # ساخت پیام‌خوانده‌نشده از طرف opponent
         MessageModel.objects.create(room=room1, sender=opponent, content="سلام", is_read=False)
 
-        # ساخت Room دیگه‌ای که پیام نخونده نداره
         room2 = ChatRoomModel.objects.create()
         room2.participants.set([user, other_user])
         MessageModel.objects.create(room=room2, sender=other_user, content="سلام", is_read=True)
@@ -103,28 +100,24 @@ class TestChatRoomSummaryListView:
         opponent = UserFactory()
         other_user = UserFactory()
 
-        # روم ۱ - با پیام نخونده
         room1 = ChatRoomModel.objects.create()
         room1.participants.set([user, opponent])
         MessageModel.objects.create(room=room1, sender=opponent, content="سلام تویی؟", is_read=False)
 
-        # روم ۲ - پیام خونده شده
         room2 = ChatRoomModel.objects.create()
         room2.participants.set([user, other_user])
         MessageModel.objects.create(room=room2, sender=other_user, content="سلام رفیق", is_read=True)
 
         client = APIClient()
         client.force_authenticate(user=user)
-        url = reverse("apps.chat:chatroom-summary")  # مطمئن شو همین نام در urls.py ثبت شده
+        url = reverse("apps.chat:chatroom-summary")
 
         response = client.get(url)
         assert response.status_code == 200
         data = response.data
 
-        # باید دو Room داشته باشیم
         assert len(data) == 2
 
-        # بررسی ساختار یکی از Roomها
         room_data = data[0]
         assert "id" in room_data
         assert "opponent" in room_data

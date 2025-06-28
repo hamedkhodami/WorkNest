@@ -104,7 +104,6 @@ def get_coded_phone_number(number):
     return f'+98{phone_number[1:]}' if phone_number.startswith('0') else f'+98{phone_number}'
 
 
-
 def get_user_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
 

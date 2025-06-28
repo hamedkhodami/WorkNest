@@ -5,10 +5,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from apps.core.swagger import mixins as ms
+
 from . import models, serializers
 
 
-class ChatRoomCreateView(CreateAPIView):
+class ChatRoomCreateView(ms.SwaggerViewMixin, CreateAPIView):
+    """
+        chat room create
+    """
+    swagger_title = 'Chat creation'
+    swagger_tags = ['Chat']
     serializer_class = serializers.ChatRoomCreateSerializer
     permission_classes = [IsAuthenticated]
 
@@ -17,7 +24,12 @@ class ChatRoomCreateView(CreateAPIView):
         serializer.save()
 
 
-class UnreadRoomListView(APIView):
+class UnreadRoomListView(ms.SwaggerViewMixin, APIView):
+    """
+        unread chats view
+    """
+    swagger_title = 'Chat unread list'
+    swagger_tags = ['Chat']
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -36,6 +48,11 @@ class UnreadRoomListView(APIView):
 
 
 class ChatRoomSummaryListView(ListAPIView):
+    """
+        summery chat view
+    """
+    swagger_title = 'Chat summery list'
+    swagger_tags = ['Chat']
     serializer_class = serializers.ChatRoomSummarySerializer
     permission_classes = [IsAuthenticated]
 

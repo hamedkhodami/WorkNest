@@ -44,11 +44,9 @@ class PermissionTest:
         admin_request = type("Request", (), {"user": admin})
         assert IsOwnerOrAdmin().has_object_permission(admin_request, None, mock_object) is True
 
-        # بررسی دسترسی مالک
         owner_request = type("Request", (), {"user": owner})
         assert IsOwnerOrAdmin().has_object_permission(owner_request, None, mock_object) is True
 
-        # بررسی عدم دسترسی سایر کاربران
         another_request = type("Request", (), {"user": another_user})
         assert IsOwnerOrAdmin().has_object_permission(another_request, None, mock_object) is False
 

@@ -1,41 +1,41 @@
-from apps.core.models import UserModelLazy
-
-from .models import NotificationUser, NotificationUserPhonenumber
-
-User = UserModelLazy()
+from apps.account.models import User
+from apps.notification.models import Notification, NotificationType
 
 
 def create_notify_admins(n_type, title, description=None, kwargs=None, **kw):
+    """
+    Create a notification for all admins (super_user or operator_user).
+    """
     admins = User.base_objects.filter(role__in=['super_user', 'operator_user'])
+    notifications = []
     for admin in admins:
-        n = NotificationUser(
+        notif = Notification(
             type=n_type,
             title=title,
-            to_user=admin,
             description=description,
             kwargs=kwargs,
+            user=admin,
+            email=admin.email,
+            phone_number=admin.phone_number,
             **kw
         )
-        n.save()
+        notif.save()
+        notifications.append(notif)
+    return notifications
 
 
 def create_notify(n_type, user, title, description=None, kwargs=None, **kw):
-    return NotificationUser.objects.create(
+    """
+    Create a notification for a specific user.
+    """
+    return Notification.objects.create(
         type=n_type,
         title=title,
-        to_user=user,
         description=description,
         kwargs=kwargs,
+        user=user,
+        email=user.email,
+        phone_number=user.phone_number,
         **kw
     )
 
-
-def create_notify_phone_number(n_type, phone_number, title, description=None, kwargs=None, **kw):
-    return NotificationUserPhonenumber.objects.create(
-        type=n_type,
-        title=title,
-        phonenumber=phone_number,
-        description=description,
-        kwargs=kwargs,
-        **kw
-    )

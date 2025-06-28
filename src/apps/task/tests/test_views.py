@@ -71,7 +71,7 @@ class TestTaskListDeleteView:
         response = self.client.delete(
             self.url,
             {
-                "id": "00000000-0000-0000-0000-000000000000",  # مقدار نامعتبر
+                "id": "00000000-0000-0000-0000-000000000000",
                 "board_id": str(self.board.id)
             },
             format="json"
@@ -89,7 +89,7 @@ class TestTaskListDeleteView:
         )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "board_id" in response.data["error"]  # بررسی مقدار داخل `error`
+        assert "board_id" in response.data["error"]
 
 
 @pytest.mark.django_db

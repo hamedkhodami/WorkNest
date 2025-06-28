@@ -106,7 +106,7 @@ class TestLogbookDashboardView:
         actors = response.data["top_actors"]
         assert len(actors) == 1
         assert actors[0]["user_id"] == str(self.user.id)
-        assert actors[0]["activity_count"] == 6  # 3 روز × ۲ لاگ
+        assert actors[0]["activity_count"] == 6
 
     def test_access_denied_for_non_member(self):
         other_user = UserFactory()
