@@ -6,5 +6,5 @@ app_name = 'apps.notification'
 
 
 urlpatterns = [
-
+    path('', views.NotificationListView.as_view(), name='notification-list'),
 ]
