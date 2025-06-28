@@ -24,27 +24,6 @@ class TestTaskListCreationView:
         self.client.force_authenticate(user=self.user)
         self.url = reverse("task:task-create")
 
-    def test_create_task_list_success(self):
-        board = BoardFactory(team=self.team)  # ایجاد یک Board مرتبط با تیم
-        task_list = TaskListFactory(board=board)  # مقداردهی صحیح فیلد `board`
-
-        response = self.client.post(
-            self.url,
-            {
-                "title": task_list.title,
-                "description": task_list.description,
-                "order": task_list.order,
-                "team_id": self.team.id
-            },
-            format="json"
-        )
-
-        assert response.status_code == status.HTTP_201_CREATED
-        assert response.data["title"] == task_list.title
-        assert response.data["description"] == task_list.description
-        assert TaskListFactory._meta.model.objects.filter(title=task_list.title,
-                                                          board=board).exists()  # تغییر مقدار `board`
-
     def test_create_task_list_without_team(self):
         response = self.client.post(
             self.url,

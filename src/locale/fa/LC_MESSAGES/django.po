@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-14 13:49+0330\n"
-"PO-Revision-Date: 2025-06-14 13:54+0330\n"
+"POT-Creation-Date: 2025-06-28 16:07+0330\n"
+"PO-Revision-Date: 2025-06-28 16:17+0330\n"
 "Last-Translator: بدون نام بدون نام <None>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -133,11 +133,12 @@ msgstr "کاربر مسدود شده"
 msgid "Blocked Users"
 msgstr "کاربران مسدود شده"
 
-#: .\apps\board\models.py:20
+#: .\apps\board\models.py:20 .\apps\task\models.py:16 .\apps\task\models.py:40
 msgid "Title"
 msgstr "عنوان"
 
-#: .\apps\board\models.py:21 .\apps\team\models.py:13
+#: .\apps\board\models.py:21 .\apps\task\models.py:17 .\apps\task\models.py:41
+#: .\apps\team\models.py:13
 msgid "Description"
 msgstr "توضیحات"
 
@@ -145,8 +146,9 @@ msgstr "توضیحات"
 msgid "Is Archived"
 msgstr "وضعیت بایگانی"
 
-#: .\apps\board\models.py:23 .\apps\team\models.py:18 .\apps\team\models.py:42
-#: .\apps\team\models.py:67 .\apps\team\models.py:83
+#: .\apps\board\models.py:23 .\apps\logbook\models.py:19
+#: .\apps\team\models.py:18 .\apps\team\models.py:42 .\apps\team\models.py:67
+#: .\apps\team\models.py:83
 msgid "Team"
 msgstr "تیم"
 
@@ -154,13 +156,51 @@ msgstr "تیم"
 msgid "Created by"
 msgstr "موسس"
 
-#: .\apps\board\models.py:30
+#: .\apps\board\models.py:30 .\apps\logbook\models.py:23
+#: .\apps\task\models.py:15
 msgid "Board"
 msgstr "تابلو اعلانات"
 
 #: .\apps\board\models.py:31
 msgid "Boards"
 msgstr "تابلوهای اعلانات"
+
+#: .\apps\chat\models.py:10
+msgid "Participants"
+msgstr "شرکت کنندگان"
+
+#: .\apps\chat\models.py:13
+msgid "ChatRoom"
+msgstr "چت روم"
+
+#: .\apps\chat\models.py:14
+msgid "ChatRooms"
+msgstr "چت روم ها"
+
+#: .\apps\chat\models.py:20
+msgid "Room"
+msgstr "خانه"
+
+#: .\apps\chat\models.py:22
+#| msgid "Gender"
+msgid "Sender"
+msgstr "فرستننده"
+
+#: .\apps\chat\models.py:23
+msgid "Content"
+msgstr "متن"
+
+#: .\apps\chat\models.py:24
+msgid "Is read"
+msgstr "خوانده شده"
+
+#: .\apps\chat\models.py:27
+msgid "Message"
+msgstr "پیام"
+
+#: .\apps\chat\models.py:28
+msgid "Messages"
+msgstr "پیام ها"
 
 #: .\apps\core\exceptions.py:40
 msgid "Validation error"
@@ -187,10 +227,8 @@ msgid "User not found"
 msgstr "کاربر یافت نشد"
 
 #: .\apps\core\text.py:8
-#, fuzzy
-#| msgid "User not found"
 msgid "This case not found"
-msgstr "کاربر یافت نشد"
+msgstr "این مورد یافت نشد"
 
 #: .\apps\core\text.py:10
 msgid "This case not create"
@@ -201,36 +239,28 @@ msgid "You do not have permission to perform this action"
 msgstr "شما اجازه انجام این عمل را ندارید"
 
 #: .\apps\core\text.py:14
-#, fuzzy
-#| msgid "Profile was successfully update"
 msgid "Successfully updated"
-msgstr "پروفایل با موفقیت به‌روزرسانی شد"
+msgstr " با موفقیت به‌روزرسانی شد"
 
 #: .\apps\core\text.py:16
 msgid "Successfully created"
 msgstr "با موفقیت ساخته شد"
 
 #: .\apps\core\text.py:18
-#, fuzzy
-#| msgid "Access denied"
 msgid "Successfully deleted"
-msgstr "دسترسی رد شد"
+msgstr "با موفقیت حذف شد"
 
 #: .\apps\core\text.py:20
-#, fuzzy
-#| msgid "The team has already been registered under this name"
 msgid "This case has already been registered under this name"
-msgstr "این تیم قبلاً با این نام ثبت شده است"
+msgstr "این مورد قبلاً با این نام ثبت شده است"
 
 #: .\apps\core\text.py:22
 msgid "This status is invalid"
 msgstr "این وضعیت نامعتبر است"
 
 #: .\apps\core\text.py:24
-#, fuzzy
-#| msgid "National id not match"
 msgid "Does not match."
-msgstr "کد ملی مطابقت ندارد"
+msgstr "مطابقت ندارد"
 
 #: .\apps\core\text.py:31
 msgid "User in block list"
@@ -365,20 +395,32 @@ msgid "Reject_invitations"
 msgstr "رد درخواست "
 
 #: .\apps\core\text.py:107
-#, fuzzy
-#| msgid "This user has already been member to this team"
 msgid "This User have not team"
-msgstr "این کاربر قبلاً عضو این تیم بوده است"
+msgstr "این کاربر عضو هیچ تیمی نیست"
 
 #: .\apps\core\text.py:109
 msgid "This board archived"
 msgstr "این تابلو اعلان بایگانی شد"
 
 #: .\apps\core\text.py:111
-#, fuzzy
-#| msgid "This user has already been member to this team"
 msgid "This User restored"
-msgstr "این کاربر قبلاً عضو این تیم بوده است"
+msgstr "این کاربر بازیابی شد"
+
+#: .\apps\core\text.py:117
+msgid "TaskList is not linked to a valid board"
+msgstr "لیست وظایف به یک بورد معتبر لینک نشده است"
+
+#: .\apps\core\text.py:119
+msgid "Added task to user"
+msgstr "وظیفه به کاربر اضافه شد"
+
+#: .\apps\core\text.py:121
+msgid "It is not possible to create a list for an archived win."
+msgstr "ایجاد لیست برای برد بایگانی شده امکان پذیر نیست."
+
+#: .\apps\core\text.py:127
+msgid "Room must be created between exactly two users."
+msgstr "اتاق باید دقیقاً بین دو کاربر ایجاد شود."
 
 #: .\apps\core\utils.py:60
 #, python-format
@@ -406,6 +448,135 @@ msgstr "اطلاعات وارد شده صحیح نیست."
 #: .\apps\core\validators.py:10
 msgid "Ensure character are persian"
 msgstr "مطمئن شوید که کاراکترها فارسی هستند"
+
+#: .\apps\logbook\enums.py:6
+#| msgid "This case not create"
+msgid "Task created"
+msgstr "وظیفه ایجاد شد"
+
+#: .\apps\logbook\enums.py:7
+msgid "Task updated"
+msgstr "وظیفه به‌روزرسانی شد"
+
+#: .\apps\logbook\enums.py:8
+msgid "Task deleted"
+msgstr "وظیفه حذف شد"
+
+#: .\apps\logbook\enums.py:9
+msgid "Board created"
+msgstr "بورد ایجاد شد"
+
+#: .\apps\logbook\enums.py:10
+msgid "Board updated"
+msgstr "بورد بروزرسانی شد"
+
+#: .\apps\logbook\enums.py:11
+#| msgid "This board archived"
+msgid "Board archived/restore"
+msgstr "این تابلو اعلان بایگانی شد"
+
+#: .\apps\logbook\enums.py:12
+msgid "Team member added"
+msgstr "عضو تیم اضافه شد"
+
+#: .\apps\logbook\enums.py:13
+msgid "Team member removed"
+msgstr "عضو تیم حذف شد"
+
+#: .\apps\logbook\enums.py:14
+msgid "User signed up"
+msgstr "کاربر ثبت نام کرد"
+
+#: .\apps\logbook\enums.py:15
+#| msgid "User not blocked"
+msgid "User logged in"
+msgstr "کاربر وارد سیستم شده است"
+
+#: .\apps\logbook\enums.py:16
+#| msgid "User not found"
+msgid "User logged out"
+msgstr "کاربر از سیستم خارج شد"
+
+#: .\apps\logbook\enums.py:17
+#| msgid "Profile not found"
+msgid "Profile updated"
+msgstr "پروفایل به‌روزرسانی شد"
+
+#: .\apps\logbook\models.py:12
+msgid "Event"
+msgstr "رویداد"
+
+#: .\apps\logbook\models.py:15
+msgid "Actor"
+msgstr "کاربر"
+
+#: .\apps\logbook\models.py:30
+msgid "Log Entry"
+msgstr "فعالیت"
+
+#: .\apps\logbook\models.py:31
+msgid "Log Entries"
+msgstr "فعالیت ها"
+
+#: .\apps\task\enums.py:6
+msgid "Low"
+msgstr "پایین"
+
+#: .\apps\task\enums.py:7
+msgid "Medium"
+msgstr "متوسط"
+
+#: .\apps\task\enums.py:8
+msgid "High"
+msgstr "بالا"
+
+#: .\apps\task\enums.py:9
+msgid "Critical"
+msgstr "حیاتی"
+
+#: .\apps\task\models.py:18
+msgid "Order"
+msgstr "اولویت"
+
+#: .\apps\task\models.py:22
+msgid "TaskList"
+msgstr "لیست وظایف"
+
+#: .\apps\task\models.py:23
+msgid "TaskLists"
+msgstr "لیست های وظایف"
+
+#: .\apps\task\models.py:36
+msgid "Task list"
+msgstr "لیست وظایف"
+
+#: .\apps\task\models.py:38
+msgid "Assignee"
+msgstr "واگذارشده"
+
+#: .\apps\task\models.py:42
+msgid "Is done"
+msgstr "وضعیت تکمیل"
+
+#: .\apps\task\models.py:43
+msgid "Deadline"
+msgstr "مهلت"
+
+#: .\apps\task\models.py:44
+msgid "Completed at"
+msgstr "تکمیل شده در"
+
+#: .\apps\task\models.py:45
+msgid "Priority"
+msgstr "اولویت"
+
+#: .\apps\task\models.py:48
+msgid "Task"
+msgstr "وظیفه"
+
+#: .\apps\task\models.py:49
+msgid "Tasks"
+msgstr "وظایف"
 
 #: .\apps\team\enums.py:6
 msgid "Pending"
@@ -491,12 +662,9 @@ msgstr "درخواست‌های عضویت تیمی"
 msgid "Member"
 msgstr "اعضا"
 
-#: .\config\settings\base.py:111
+#: .\config\settings\base.py:119
 msgid "Persian"
 msgstr "فارسی"
-
-#~ msgid "Profile not found"
-#~ msgstr "نمایه یافت نشد"
 
 #~ msgid "Failed to create the team, please try again later"
 #~ msgstr "ایجاد تیم ناموفق بود، لطفاً بعداً دوباره امتحان کنید"
