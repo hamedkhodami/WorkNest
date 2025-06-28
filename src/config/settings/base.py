@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'apps.notification.apps.NotificationConfig',
     'apps.logbook.apps.LogbookConfig',
     'apps.chat.apps.ChatConfig',
-    'apps.report.apps.ReportConfig',
     'apps.public.apps.PublicConfig',
 ]
 

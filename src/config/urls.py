@@ -43,7 +43,6 @@ urlpatterns = [
     path('notification/', include('apps.notification.urls', namespace='notification')),
     path('logbook/', include('apps.logbook.urls', namespace='logbook')),
     path('chat/', include('apps.chat.urls', namespace='chat')),
-    path('report/', include('apps.report.urls', namespace='report')),
     path('public/', include('apps.public.urls', namespace='public')),
 
     dj_path('rosetta/', include('rosetta.urls')),
