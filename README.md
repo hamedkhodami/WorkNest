@@ -13,7 +13,7 @@ Inspired by Trello, engineered with precision.
 - 🔄 Real-time logic integration ready (via Django Channels)
 - 📚 Multilingual support with Rosetta
 - 🧪 Full unit testing coverage (Pytest + FactoryBoy)
-- ⚙️ Extensible architecture: board, task, notification, chat, report
+- ⚙️ Extensible architecture: board, task, notification, chat
 
 ---
 

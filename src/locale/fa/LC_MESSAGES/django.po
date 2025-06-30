@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-28 16:07+0330\n"
-"PO-Revision-Date: 2025-06-28 16:17+0330\n"
+"POT-Creation-Date: 2025-06-30 17:51+0330\n"
+"PO-Revision-Date: 2025-06-30 17:59+0330\n"
 "Last-Translator: بدون نام بدون نام <None>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -18,6 +18,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.10.2\n"
+
+#: .\apps\account\apps.py:8
+msgid "Account"
+msgstr "کاربر"
 
 #: .\apps\account\enums.py:7
 msgid "Admin"
@@ -47,7 +51,8 @@ msgstr "زن"
 msgid "Phone number"
 msgstr "شماره تماس"
 
-#: .\apps\account\models.py:69
+#: .\apps\account\models.py:69 .\apps\notification\enums.py:6
+#: .\apps\notification\models.py:19
 msgid "Email"
 msgstr "ایمیل"
 
@@ -85,7 +90,8 @@ msgid "Staff"
 msgstr "کارکنان"
 
 #: .\apps\account\models.py:91 .\apps\account\models.py:141
-#: .\apps\team\models.py:41 .\apps\team\models.py:82
+#: .\apps\notification\models.py:18 .\apps\team\models.py:41
+#: .\apps\team\models.py:78
 msgid "User"
 msgstr "کاربر"
 
@@ -133,12 +139,18 @@ msgstr "کاربر مسدود شده"
 msgid "Blocked Users"
 msgstr "کاربران مسدود شده"
 
-#: .\apps\board\models.py:20 .\apps\task\models.py:16 .\apps\task\models.py:40
+#: .\apps\board\apps.py:8 .\apps\board\models.py:30
+#: .\apps\logbook\models.py:23 .\apps\task\models.py:15
+msgid "Board"
+msgstr "تابلو اعلانات"
+
+#: .\apps\board\models.py:20 .\apps\notification\models.py:14
+#: .\apps\task\models.py:16 .\apps\task\models.py:40
 msgid "Title"
 msgstr "عنوان"
 
-#: .\apps\board\models.py:21 .\apps\task\models.py:17 .\apps\task\models.py:41
-#: .\apps\team\models.py:13
+#: .\apps\board\models.py:21 .\apps\notification\models.py:15
+#: .\apps\task\models.py:17 .\apps\task\models.py:41 .\apps\team\models.py:13
 msgid "Description"
 msgstr "توضیحات"
 
@@ -146,9 +158,9 @@ msgstr "توضیحات"
 msgid "Is Archived"
 msgstr "وضعیت بایگانی"
 
-#: .\apps\board\models.py:23 .\apps\logbook\models.py:19
-#: .\apps\team\models.py:18 .\apps\team\models.py:42 .\apps\team\models.py:67
-#: .\apps\team\models.py:83
+#: .\apps\board\models.py:23 .\apps\logbook\models.py:19 .\apps\team\apps.py:8
+#: .\apps\team\models.py:18 .\apps\team\models.py:42 .\apps\team\models.py:63
+#: .\apps\team\models.py:79
 msgid "Team"
 msgstr "تیم"
 
@@ -156,14 +168,14 @@ msgstr "تیم"
 msgid "Created by"
 msgstr "موسس"
 
-#: .\apps\board\models.py:30 .\apps\logbook\models.py:23
-#: .\apps\task\models.py:15
-msgid "Board"
-msgstr "تابلو اعلانات"
-
 #: .\apps\board\models.py:31
 msgid "Boards"
 msgstr "تابلوهای اعلانات"
+
+#: .\apps\chat\apps.py:8
+#| msgid "ChatRoom"
+msgid "Chat"
+msgstr "گفت و گو"
 
 #: .\apps\chat\models.py:10
 msgid "Participants"
@@ -182,7 +194,6 @@ msgid "Room"
 msgstr "خانه"
 
 #: .\apps\chat\models.py:22
-#| msgid "Gender"
 msgid "Sender"
 msgstr "فرستننده"
 
@@ -425,17 +436,17 @@ msgstr "اتاق باید دقیقاً بین دو کاربر ایجاد شود.
 #: .\apps\core\utils.py:60
 #, python-format
 msgid "%(days)s days ago."
-msgstr ""
+msgstr "%(days)s روز قبل"
 
 #: .\apps\core\utils.py:62
 #, python-format
 msgid "%(hours)s hours ago."
-msgstr ""
+msgstr "%(hours)s ساعت قبل"
 
 #: .\apps\core\utils.py:64
 #, python-format
 msgid "%(minutes)s minutes ago."
-msgstr ""
+msgstr "%(minutes)s دقیقه قبل"
 
 #: .\apps\core\utils.py:66
 msgid "Moments ago"
@@ -449,8 +460,11 @@ msgstr "اطلاعات وارد شده صحیح نیست."
 msgid "Ensure character are persian"
 msgstr "مطمئن شوید که کاراکترها فارسی هستند"
 
+#: .\apps\logbook\apps.py:8
+msgid "LogBook"
+msgstr "گزارش رفتار"
+
 #: .\apps\logbook\enums.py:6
-#| msgid "This case not create"
 msgid "Task created"
 msgstr "وظیفه ایجاد شد"
 
@@ -471,7 +485,6 @@ msgid "Board updated"
 msgstr "بورد بروزرسانی شد"
 
 #: .\apps\logbook\enums.py:11
-#| msgid "This board archived"
 msgid "Board archived/restore"
 msgstr "این تابلو اعلان بایگانی شد"
 
@@ -488,17 +501,14 @@ msgid "User signed up"
 msgstr "کاربر ثبت نام کرد"
 
 #: .\apps\logbook\enums.py:15
-#| msgid "User not blocked"
 msgid "User logged in"
 msgstr "کاربر وارد سیستم شده است"
 
 #: .\apps\logbook\enums.py:16
-#| msgid "User not found"
 msgid "User logged out"
 msgstr "کاربر از سیستم خارج شد"
 
 #: .\apps\logbook\enums.py:17
-#| msgid "Profile not found"
 msgid "Profile updated"
 msgstr "پروفایل به‌روزرسانی شد"
 
@@ -517,6 +527,69 @@ msgstr "فعالیت"
 #: .\apps\logbook\models.py:31
 msgid "Log Entries"
 msgstr "فعالیت ها"
+
+#: .\apps\notification\apps.py:8 .\apps\notification\models.py:28
+#: .\apps\notification\models.py:35
+msgid "Notification"
+msgstr "اعلان ها"
+
+#: .\apps\notification\enums.py:7
+msgid "SMS"
+msgstr "پیامک"
+
+#: .\apps\notification\enums.py:8
+msgid "In-app"
+msgstr "داخلی"
+
+#: .\apps\notification\enums.py:12 .\apps\team\enums.py:6
+msgid "Pending"
+msgstr "در حال بررسی"
+
+#: .\apps\notification\enums.py:13
+msgid "Sent"
+msgstr "ارسال شده"
+
+#: .\apps\notification\enums.py:14
+msgid "Failed"
+msgstr "شکست خورده"
+
+#: .\apps\notification\models.py:11
+msgid "Notification Type"
+msgstr "نوع اعلان"
+
+#: .\apps\notification\models.py:12 .\apps\team\models.py:64
+#: .\apps\team\models.py:81
+msgid "Status"
+msgstr "وضعیت"
+
+#: .\apps\notification\models.py:16
+msgid "Extra Data"
+msgstr "داده ی اضافی"
+
+#: .\apps\notification\models.py:20
+#| msgid "Phone number"
+msgid "Phone Number"
+msgstr "شماره تماس"
+
+#: .\apps\notification\models.py:22
+msgid "Is Visited"
+msgstr "مشاهده شده"
+
+#: .\apps\notification\models.py:23
+msgid "Retry Count"
+msgstr "تعداد تلاش مجدد"
+
+#: .\apps\notification\models.py:24
+msgid "Sent At"
+msgstr "فرستاده شده در"
+
+#: .\apps\notification\models.py:29
+msgid "Notifications"
+msgstr "اعلانات"
+
+#: .\apps\task\apps.py:8 .\apps\task\models.py:48
+msgid "Task"
+msgstr "وظیفه"
 
 #: .\apps\task\enums.py:6
 msgid "Low"
@@ -570,17 +643,9 @@ msgstr "تکمیل شده در"
 msgid "Priority"
 msgstr "اولویت"
 
-#: .\apps\task\models.py:48
-msgid "Task"
-msgstr "وظیفه"
-
 #: .\apps\task\models.py:49
 msgid "Tasks"
 msgstr "وظایف"
-
-#: .\apps\team\enums.py:6
-msgid "Pending"
-msgstr "در حال بررسی"
 
 #: .\apps\team\enums.py:7
 msgid "Accepted"
@@ -626,35 +691,31 @@ msgstr "اعضا در تیم"
 msgid "TeamMemberShips"
 msgstr "اعضا در تیم ها"
 
-#: .\apps\team\models.py:65
+#: .\apps\team\models.py:61
 msgid "Inviter"
 msgstr "دعوت کننده"
 
-#: .\apps\team\models.py:66
+#: .\apps\team\models.py:62
 msgid "Invitee"
 msgstr "دعوت شونده"
 
-#: .\apps\team\models.py:68 .\apps\team\models.py:85
-msgid "Status"
-msgstr "وضعیت"
-
-#: .\apps\team\models.py:72
+#: .\apps\team\models.py:68
 msgid "TeamInvitation"
 msgstr "دعوتنامه تیمی"
 
-#: .\apps\team\models.py:73
+#: .\apps\team\models.py:69
 msgid "TeamInvitations"
 msgstr "دعوت‌نامه‌های تیمی"
 
-#: .\apps\team\models.py:84
+#: .\apps\team\models.py:80
 msgid "Resolved_by"
 msgstr "حل شده توسط"
 
-#: .\apps\team\models.py:89
+#: .\apps\team\models.py:85
 msgid "TeamJoinRequest"
 msgstr "درخواست عضویت در تیم"
 
-#: .\apps\team\models.py:90
+#: .\apps\team\models.py:86
 msgid "TeamJoinRequests"
 msgstr "درخواست‌های عضویت تیمی"
 
@@ -662,7 +723,7 @@ msgstr "درخواست‌های عضویت تیمی"
 msgid "Member"
 msgstr "اعضا"
 
-#: .\config\settings\base.py:119
+#: .\config\settings\base.py:118
 msgid "Persian"
 msgstr "فارسی"
 

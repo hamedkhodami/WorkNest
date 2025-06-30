@@ -66,7 +66,7 @@ class TaskListDeleteSerializer(serializers.Serializer):
         return attrs
 
 
-class TaskListsSerializer(serializers.ModelSerializer):
+class AllTaskListSerializer(serializers.ModelSerializer):
     """
      serializers list of all tasklist
     """
@@ -77,6 +77,13 @@ class TaskListsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TaskListModel
         fields = ['id', 'board_uuid', 'title']
+
+
+class AllTaskListResponseSerializer(serializers.Serializer):
+    """
+     serializer response list of all tasklist
+    """
+    data = AllTaskListSerializer(many=True)
 
 
 class TaskListDetailSerializer(serializers.ModelSerializer):

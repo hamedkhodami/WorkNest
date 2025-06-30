@@ -32,8 +32,6 @@ class CreateBoardView(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
         response_data = self.create(request, response=False, *args, **kwargs)
         return Response(response_data, status=status.HTTP_201_CREATED)
 
-    # TODO: Implement notification system
-
 
 class BoardsTeamsView(ms.SwaggerViewMixin, APIView):
     """

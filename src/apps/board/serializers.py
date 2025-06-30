@@ -7,10 +7,6 @@ from . import exceptions
 from .models import BoardModel
 
 
-class MessageSerializer(serializers.Serializer):
-    message = serializers.CharField()
-
-
 class CreateBoardSerializer(serializers.ModelSerializer):
     """
       create new board serializers
@@ -69,7 +65,7 @@ class DetailBoardSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = BoardModel
-        fields = ['title', 'description', 'team', 'created_by']
+        fields = ['title', 'description', 'team', 'created_by', 'is_archived']
 
     def get_created_by(self, obj):
         return {

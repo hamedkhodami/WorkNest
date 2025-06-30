@@ -39,6 +39,16 @@ class TestTeamCreateView:
 
         assert response.status_code == 401
 
+    def test_create_team_with_duplicate_name(self):
+        TeamFactory(name="Dev Team")
+        data = {"name": "Dev Team", "description": "Duplicate!"}
+        response = self.client.post(self.url, data)
+
+        json_data = response.json()
+        assert response.status_code == 400
+        assert "error" in json_data
+        assert "name" in json_data["error"]
+
 
 @pytest.mark.django_db
 class TestUserTeamsView:

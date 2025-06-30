@@ -76,11 +76,23 @@ class TestDetailBoardView:
     @pytest.fixture(autouse=True)
     def setup(self):
         self.client = APIClient()
-        self.user = UserFactory(is_active=True, role=Role.PROJECT_MEMBER)
+        self.user = UserFactory(is_active=True, team_user=True)
         self.team = TeamFactory(created_by=self.user)
+        self.client.force_authenticate(user=self.user)
         self.user.team = self.team
         self.board = BoardFactory(team=self.team, created_by=self.user)
         self.url = reverse("board:board-detail", kwargs={"board_id": str(self.board.id)})
+
+    def test_board_detail_success(self):
+
+        response = self.client.get(self.url)
+
+        assert response.status_code == 200
+        assert response.data["title"] == self.board.title
+        assert response.data["description"] == self.board.description
+        assert response.data["is_archived"] == self.board.is_archived
+        assert response.data["team"]["name"] == self.board.team.name
+        assert response.data["created_by"]["name"] == self.board.created_by.full_name()
 
 
     def test_detail_board_forbidden_for_non_team_user(self):

@@ -62,14 +62,15 @@ class TaskListDeleteView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
         return tasklist
 
 
-class TaskListsView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
+class AllTaskListsView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
     """
         View to list all task lists
     """
     swagger_title = "Task Lists"
     swagger_tags = ["Task"]
     permission_classes = (per.IsTeamUser,)
-    serializer_response = serializers.TaskListsSerializer
+    serializer = serializers.AllTaskListSerializer
+    serializer_response = serializers.AllTaskListResponseSerializer
 
     def get_queryset(self):
         board_id = self.request.query_params.get("board_id")
@@ -91,7 +92,6 @@ class TaskListsView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
         return Response({"data": response_data}, status=status.HTTP_200_OK)
 
 
-# TODO: complete test
 class TaskListsDetailView(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
     """
         View to list detail task lists
@@ -128,6 +128,8 @@ class AddTaskToUserView(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
     def post(self, request, *args, **kwargs):
         return self.create(request)
 
+    # TODO: Implement notification system > email
+
     def before_save(self):
         task_list = self.validated_data["task_list"]
         assignee = self.validated_data["assignee"]
@@ -148,6 +150,8 @@ class RemoveTaskView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
 
     def delete(self, request):
         return self.delete_instance(request)
+
+    # TODO: Implement notification system > email
 
     def get_instance(self):
         ser = self.serializer_response(data=self.request.data, context={'request': self.request})
@@ -184,6 +188,8 @@ class TaskUpdateView(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
         ser = self.serializer(instance, data=self.request.data, partial=True, context={'request': request})
         ser.is_valid(raise_exception=True)
         ser.save()
+
+        # TODO: Implement notification system > email
 
         return Response({
             'message': text.success_update,

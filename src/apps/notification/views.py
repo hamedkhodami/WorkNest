@@ -1,5 +1,7 @@
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.views import APIView
+from rest_framework.response import Response
+
 from apps.core.views import mixins
 from apps.core.swagger import mixins as ms
 
@@ -21,4 +23,9 @@ class NotificationListView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
         return models.Notification.objects.filter(user=self.request.user).order_by('-created_at')
 
     def get(self, request, *args, **kwargs):
-        return self.list(request)
+        response_data = self.list(request)
+
+        if isinstance(response_data, Response):
+            return response_data
+
+        return Response({"data": response_data}, status=status.HTTP_200_OK)

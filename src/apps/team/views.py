@@ -31,6 +31,8 @@ class TeamCreateView(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
+    # TODO: Implement notification system > email
+
 
 class UsersTeamsView(ms.SwaggerViewMixin, APIView):
     """
@@ -54,7 +56,6 @@ class TeamDetailView(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
     swagger_tags = ['Team']
     permission_classes = [permissions.IsAuthenticated]
     serializer_response = serializers.DetailTeamSerializers
-
 
     def get(self, request, *args, **kwargs):
         return self.detail(request)
@@ -126,6 +127,8 @@ class JoinTeamView(ms.SwaggerViewMixin, APIView):
         })
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
+    # TODO: Implement notification system > email
+
 
 class ResultJoinTeamView(ms.SwaggerViewMixin, APIView):
     """
@@ -144,7 +147,7 @@ class ResultJoinTeamView(ms.SwaggerViewMixin, APIView):
         ser.save()
         accept_request(join_request)
 
-        # TODO: Implement notification system
+        # TODO: Implement notification system > email
 
         return Response({"message": text.request_resolved}, status=status.HTTP_200_OK)
 
@@ -182,6 +185,8 @@ class TeamInvitationRequestView(ms.SwaggerViewMixin, APIView):
         validated_data["inviter"] = inviter
         ser.save()
 
+        # TODO: Implement notification system > email
+
         response_serializer = self.serializer_response({"message": text.success_team_request}).data
         return Response(response_serializer, status=status.HTTP_201_CREATED)
 
@@ -207,6 +212,8 @@ class ResultInvitationTeamView(ms.SwaggerViewMixin, APIView):
 
         if ser.validated_data.get("status") == STATUS_CHOICES.ACCEPTED:
             models.TeamMembership.objects.get_or_create(user=request.user, team=join_request.team)
+
+        # TODO: Implement notification system > email
 
         return Response({"message": text.request_resolved}, status=status.HTTP_200_OK)
 
@@ -257,6 +264,8 @@ class RemoveTeamMemberView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView)
         is_team_member(self.request.user, team_membership.team)
 
         return team_membership
+
+        # TODO: Implement notification system > email
 
 
 

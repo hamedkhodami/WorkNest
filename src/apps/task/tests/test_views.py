@@ -93,6 +93,46 @@ class TestTaskListDeleteView:
 
 
 @pytest.mark.django_db
+class TestAllTaskListsView:
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        self.client = APIClient()
+        self.user = UserFactory(is_active=True, role="admin")
+        self.team = TeamFactory(created_by=self.user)
+        self.board = BoardFactory(team=self.team, created_by=self.user)
+        TeamMembershipFactory(user=self.user, team=self.team)
+
+        self.tasklist1 = TaskListFactory(board=self.board, title="Planning")
+        self.tasklist2 = TaskListFactory(board=self.board, title="In Progress")
+
+        self.client.force_authenticate(user=self.user)
+        self.url = reverse("task:task-list")
+
+    def test_list_tasklists_success(self):
+        response = self.client.get(self.url, {"board_id": str(self.board.id)})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert "data" in response.data
+        assert len(response.data["data"]) == 2
+
+        titles = [tl["title"] for tl in response.data["data"]]
+        assert "Planning" in titles
+        assert "In Progress" in titles
+
+    def test_list_tasklists_board_not_found(self):
+        response = self.client.get(self.url, {"board_id": "00000000-0000-0000-0000-000000000000"})
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_list_tasklists_unauthorized_user(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.url, {"board_id": str(self.board.id)})
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.django_db
 class TestTaskListDetailView:
     @pytest.fixture(autouse=True)
     def setup(self, db):

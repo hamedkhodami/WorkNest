@@ -21,8 +21,3 @@ class LogEntryAdmin(admin.ModelAdmin):
         return obj.created_at.strftime("%Y-%m-%d %H:%M")
 
     short_created_at.short_description = "Created at"
-
-
-from django.contrib import admin
-
-# Register your models here.

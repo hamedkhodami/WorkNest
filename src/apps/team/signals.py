@@ -1,8 +1,7 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
 
-from apps.account.service.role_manager import update_user_role
-
+from .service.role_manager import update_user_role
 from . import enums, models
 
 

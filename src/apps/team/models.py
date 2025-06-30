@@ -54,10 +54,6 @@ class TeamMembership(BaseModel):
     def is_member(cls, user, team):
         return cls.objects.filter(user=user, team=team).exists()
 
-    @classmethod
-    def get_team_members(cls, team):
-        return cls.objects.filter(team=team).values_list('user__username', flat=True)
-
 
 class TeamInvitation(BaseModel):
     STATUS_CHOICES = JoinTeamStatusEnum
@@ -88,10 +84,6 @@ class TeamJoinRequest(models.Model):
         unique_together = ('user', 'team')
         verbose_name = _("TeamJoinRequest")
         verbose_name_plural = _("TeamJoinRequests")
-
-    @classmethod
-    def get_team_requests(cls, team):
-        return cls.objects.filter(team=team, status=cls.STATUS_CHOICES.PENDING)
 
     def __str__(self):
         return f'{self.team.name} - {self.status}'
