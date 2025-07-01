@@ -5,7 +5,7 @@ from apps.notification.models import Notification
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'type', 'status', 'title', 'user', 'email',
+        'id', 'type', 'status', 'title', 'to_user', 'email',
         'phone_number', 'is_visited', 'retry_count', 'sent_at', 'created_at'
     )
     list_filter = ('type', 'status', 'is_visited', 'created_at')
@@ -20,7 +20,7 @@ class NotificationAdmin(admin.ModelAdmin):
             )
         }),
         ('Recipient', {
-            'fields': ('user', 'email', 'phone_number')
+            'fields': ('to_user', 'email', 'phone_number')
         }),
         ('Status & Meta', {
             'fields': ('is_visited', 'retry_count', 'sent_at', 'created_at')

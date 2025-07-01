@@ -15,7 +15,7 @@ class Notification(BaseModel):
     description = models.TextField(_('Description'), blank=True, null=True)
     kwargs = JSONField(_('Extra Data'), blank=True, null=True)
 
-    user = models.ForeignKey('account.User', on_delete=models.CASCADE, blank=True, null=True, verbose_name=_('User'))
+    to_user = models.ForeignKey('account.User', on_delete=models.CASCADE, blank=True, null=True, verbose_name=_('User'))
     email = models.EmailField(_('Email'), blank=True, null=True)
     phone_number = PhoneNumberField(_('Phone Number'), region='IR', blank=True, null=True)
 
