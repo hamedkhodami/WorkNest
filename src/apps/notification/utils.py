@@ -1,5 +1,6 @@
 from apps.account.models import User
-from apps.notification.models import Notification, NotificationType
+from .models import Notification
+from .enums import NotificationType, NotificationStatus
 
 
 def create_notify_admins(n_type, title, description=None, kwargs=None, **kw):
