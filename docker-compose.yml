@@ -4,55 +4,60 @@ services:
   redis:
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python src/manage.py runserver 0.0.0.0:8000
+    image: worknest-app
+    command: python manage.py runserver 0.0.0.0:8000
+    working_dir: /app/src
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     depends_on:
-      - redis
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-      - SMS_PROVIDER=your_sms_provider_here
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./src/.env
 
   celery_worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: worknest-app
     command: celery -A config worker --loglevel=info
+    working_dir: /app/src
     volumes:
       - .:/app
     depends_on:
-      - redis
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./src/.env
 
   celery_beat:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: worknest-app
     command: celery -A config beat --loglevel=info
+    working_dir: /app/src
     volumes:
       - .:/app
     depends_on:
-      - redis
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./src/.env
 
   flower:
     image: mher/flower
     ports:
       - "5555:5555"
+    depends_on:
+      redis:
+        condition: service_healthy
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
-    depends_on:
-      - redis
