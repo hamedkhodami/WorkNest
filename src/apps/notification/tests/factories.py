@@ -18,8 +18,8 @@ class NotificationFactory(DjangoModelFactory):
     description = factory.Faker('paragraph', nb_sentences=3)
     kwargs = factory.LazyFunction(lambda: {"link": "https://example.com/detail/123", "priority": "high"})
 
-    user = factory.SubFactory(UserFactory)
-    email = factory.LazyAttribute(lambda obj: obj.user.email if obj.user else factory.Faker('email').generate({}))
+    to_user = factory.SubFactory(UserFactory)
+    email = factory.LazyAttribute(lambda obj: obj.to_user.email if obj.to_user else factory.Faker('email').generate({}))
     phone_number = factory.LazyAttribute(lambda _: PhoneNumber.from_string("+989123456789", region="IR"))
 
     is_visited = factory.Faker('boolean', chance_of_getting_true=30)

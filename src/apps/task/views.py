@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,6 +11,9 @@ from apps.core.services.access_control import is_team_member
 from apps.account.auth import permissions as per
 from apps.team.models import TeamModel
 from apps.board.models import BoardModel
+from apps.notification.utils import create_notify
+from apps.notification.enums import NotificationType
+from apps.notification.services.email_dispatcher import dispatch_email_notification
 
 from . import models, exceptions, serializers
 
@@ -128,14 +132,29 @@ class AddTaskToUserView(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
     def post(self, request, *args, **kwargs):
         return self.create(request)
 
-    # TODO: Implement notification system > email
-
     def before_save(self):
         task_list = self.validated_data["task_list"]
         assignee = self.validated_data["assignee"]
 
         is_team_member(self.request.user, task_list.board.team)
         is_team_member(assignee, task_list.board.team)
+
+        notification = create_notify(
+            to_user=assignee,
+            title=_("New Task Assigned"),
+            description=_("You have been assigned a new task by {admin}").format(
+                admin=self.request.user.full_name()
+            ),
+            kwargs={
+                "task_title": self.validated_data["title"],
+                "board_title": task_list.board.title,
+                "team_name": task_list.board.team.name,
+                "type": "ADDED_TASK"
+            }
+        )
+
+        if notification.type == NotificationType.EMAIL:
+            dispatch_email_notification(notification)
 
 
 class RemoveTaskView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
@@ -151,8 +170,6 @@ class RemoveTaskView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
     def delete(self, request):
         return self.delete_instance(request)
 
-    # TODO: Implement notification system > email
-
     def get_instance(self):
         ser = self.serializer_response(data=self.request.data, context={'request': self.request})
         ser.is_valid(raise_exception=True)
@@ -160,6 +177,29 @@ class RemoveTaskView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView):
         task = self.validated_data['task']
 
         is_team_member(self.request.user, task.task_list.board.team)
+
+        assignee = task.assignee
+        board = task.task_list.board
+        team = board.team
+
+        notification = create_notify(
+            to_user=assignee,
+            title=_("Task Removed"),
+            description=_("Your task '{task}' has been removed by {admin}.").format(
+                task=task.title,
+                admin=self.request.user.full_name()
+            ),
+            kwargs={
+                "task_title": task.title,
+                "board_title": board.title,
+                "team_name": team.name,
+                "type": "REMOVED_TASK"
+            }
+        )
+
+        if notification.type == NotificationType.EMAIL:
+            dispatch_email_notification(notification)
+
         return task
 
 
@@ -189,7 +229,28 @@ class TaskUpdateView(ms.SwaggerViewMixin, mixins.UpdateViewMixin, APIView):
         ser.is_valid(raise_exception=True)
         ser.save()
 
-        # TODO: Implement notification system > email
+        assignee = ser.instance.assignee
+        board = ser.instance.task_list.board
+        team = board.team
+
+        notification = create_notify(
+            to_user=assignee,
+            title=_("Task Updated"),
+            description=_("Your task '{task}' in team '{team}' was updated by {admin}.").format(
+                task=ser.instance.title,
+                team=team.name,
+                admin=request.user.full_name()
+            ),
+            kwargs={
+                "task_title": ser.instance.title,
+                "board_title": board.title,
+                "team_name": team.name,
+                "type": "UPDATED_TASK"
+            }
+        )
+
+        if notification.type == NotificationType.EMAIL:
+            dispatch_email_notification(notification)
 
         return Response({
             'message': text.success_update,

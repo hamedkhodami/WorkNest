@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,6 +23,9 @@ from apps.core.swagger import mixins as ms
 from apps.core import utils, redis_utils
 from apps.core.exceptions import ValidationError, OperationHasAlreadyBeenDoneError
 from apps.core import text
+from apps.notification.utils import create_notify
+from apps.notification.enums import NotificationType
+from apps.notification.services.sms_dispatcher import dispatch_sms_notification
 
 from . import serializers, models, exceptions
 from .auth import permissions as per
@@ -97,7 +101,17 @@ class LoginOTP(APIView):
         otp_code = utils.random_num(conf['CODE_LENGTH'])
         redis_utils.set_value_expire(user_key, otp_code, conf['TIMEOUT'])
 
-        # TODO: Implement notification system
+        notification = create_notify(
+            to_user=user,
+            title=_("OTP Sent"),
+            description=_("Code sent to your phone"),
+            kwargs={
+                'code': otp_code,
+                'type': 'OTP_SEND_CODE'
+            }
+        )
+        if notification.type == NotificationType.SMS:
+            dispatch_sms_notification(notification)
 
         res = {'message': text.otp_code_sent}
         return Response(serializers.MessageSerializer(res).data)
@@ -132,7 +146,18 @@ class LoginOTP(APIView):
 
         redis_utils.remove_key(user_key)
 
-        # TODO: Implement notification system
+        notification = create_notify(
+            to_user=user,
+            title=_("Login Successful"),
+            description=_("You're now logged in"),
+            kwargs={
+                'ip': request.META.get("REMOTE_ADDR", "unknown"),
+                'type': 'LOGIN_SUCCESS'
+            }
+        )
+
+        if notification.type == NotificationType.SMS:
+            dispatch_sms_notification(notification)
 
         tokens = RefreshToken.for_user(user)
         response_data = {
@@ -202,7 +227,17 @@ class Register(ms.SwaggerViewMixin, APIView):
             'user_role': user.role
         }
 
-        # TODO: Implement notification system
+        notification = create_notify(
+            to_user=user,
+            title=_("Register Success"),
+            description=_("Welcome to the platform!"),
+            kwargs={
+                "type": "REGISTER_SUCCESS"
+            }
+        )
+
+        if notification.type == NotificationType.SMS:
+            dispatch_sms_notification(notification)
 
         return Response(self.serializer_response(tokens_dict).data, status=status.HTTP_201_CREATED)
 
@@ -240,7 +275,18 @@ class ResetPassword(ms.SwaggerViewMixin, APIView):
         reset_code = utils.random_num(conf['CODE_LENGTH'])
         redis_utils.set_value_expire(user_key, reset_code, conf['TIMEOUT'])
 
-        # TODO: Implement notification system
+        notification = create_notify(
+            to_user=user,
+            title=_("Reset Password Code Sent"),
+            description=_("Reset code sent to your phone"),
+            kwargs={
+                "code": reset_code,
+                "type": "RESET_PASSWORD_SEND_CODE"
+            }
+        )
+
+        if notification.type == NotificationType.SMS:
+            dispatch_sms_notification(notification)
 
         res = {'message': text.reset_password_send_code}
         return Response(self.serializer_response(res).data)
@@ -288,7 +334,17 @@ class ResetPasswordCheckAndSet(ms.SwaggerViewMixin, APIView):
         password = ser.validated_data['password']
         user.set_password(password)
 
-        # TODO: Implement notification system
+        notification = create_notify(
+            to_user=user,
+            title=_("Reset Password Successful"),
+            description=_("Your password has been successfully updated"),
+            kwargs={
+                "type": "RESET_PASSWORD_SUCCESSFULLY"
+            }
+        )
+
+        if notification.type == NotificationType.SMS:
+            dispatch_sms_notification(notification)
 
         res = {'message': text.reset_password_successfully}
         return Response(self.serializer_response(res).data)
@@ -325,7 +381,18 @@ class ConfirmPhoneNumber(APIView):
 
         redis_utils.set_value_expire(user_key, code, conf['TIMEOUT'])
 
-        # TODO: Implement notification system
+        notification = create_notify(
+            to_user=user,
+            title=_("Confirmation Code Sent"),
+            description=_("Your confirmation code was sent via SMS."),
+            kwargs={
+                "code": code,
+                "type": "CONFIRM_PHONENUMBER_SEND_CODE"
+            }
+        )
+
+        if notification.type == NotificationType.SMS:
+            dispatch_sms_notification(notification)
 
         res = {'message': text.confirm_code_sent}
         return Response(self.serializer_response(res).data)
@@ -364,7 +431,17 @@ class ConfirmPhoneNumber(APIView):
         user.is_phone_number_confirmed = True
         user.save(update_fields=['is_phone_number_confirmed'])
 
-        # TODO: Implement notification system
+        notification = create_notify(
+            to_user=user,
+            title=_("Phone Number Confirmed"),
+            description=_("Your phone number has been successfully confirmed."),
+            kwargs={
+                "type": "CONFIRM_PHONENUMBER_SUCCESSFULLY"
+            }
+        )
+
+        if notification.type == NotificationType.SMS:
+            dispatch_sms_notification(notification)
 
         res = {'message': text.confirm_phone_number_successfully}
         return Response(self.serializer_response(res).data)
@@ -384,13 +461,14 @@ class UserSendOTP(ms.SwaggerViewMixin, APIView):
         ser = self.serializer(data=request.data)
         ser.is_valid(raise_exception=True)
         phone_number = ser['phone_number'].value
+        user = models.User.objects.available_users.get(phone_number=phone_number)
 
         try:
             user = models.User.objects.available_users.get(phone_number=phone_number)
             if request.data.get('request_type') == 'register':
                 raise exceptions.UserIsExists()
         except models.User.DoesNotExist:
-            pass  # اگر کاربر وجود نداشت، ادامه فرآیند ارسال OTP
+            pass
 
         conf = settings.USER_OTP_CONFIG
         user_key = conf['STORE_BY'].format(phone_number)
@@ -403,7 +481,18 @@ class UserSendOTP(ms.SwaggerViewMixin, APIView):
         otp_code = utils.random_num(conf['CODE_LENGTH'])
         redis_utils.set_value_expire(user_key, otp_code, conf['TIMEOUT'])
 
-        # TODO: Implement notification system
+        notification = create_notify(
+            to_user=user,
+            title=_("OTP Code Sent"),
+            description=_("Your OTP code has been sent via SMS."),
+            kwargs={
+                "code": otp_code,
+                "type": "OTP_SEND_CODE"
+            }
+        )
+
+        if notification.type == NotificationType.SMS:
+            dispatch_sms_notification(notification)
 
         res = {'message': text.create_user_otp_sent_code}
         return Response(self.serializer_response(res).data)

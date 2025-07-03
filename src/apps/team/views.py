@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 from rest_framework import permissions, status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -11,6 +13,9 @@ from apps.core import text
 from apps.core.services.access_control import is_team_member
 from apps.account.auth import permissions as per
 from apps.account.models import User
+from apps.notification.utils import create_notify
+from apps.notification.enums import NotificationType
+from apps.notification.services.email_dispatcher import dispatch_email_notification
 
 from . import models, serializers, enums, exceptions
 from .service.create_membership import create_membership_if_accepted
@@ -31,7 +36,23 @@ class TeamCreateView(ms.SwaggerViewMixin, mixins.CreateViewMixin, APIView):
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
-    # TODO: Implement notification system > email
+    def perform_create(self, serializer):
+        team = serializer.save(created_by=self.request.user)
+
+        notification = create_notify(
+            to_user=self.request.user,
+            title=_("Team Created"),
+            description=_("A new team '{team.name}' has been created.").format(
+                team=team.name
+            ),
+            kwargs={
+                'team_name': team.name,
+                'type': 'TEAM_CREATION'
+            }
+        )
+
+        if notification.type == NotificationType.EMAIL:
+            dispatch_email_notification(notification)
 
 
 class UsersTeamsView(ms.SwaggerViewMixin, APIView):
@@ -122,12 +143,26 @@ class JoinTeamView(ms.SwaggerViewMixin, APIView):
 
         ser.save()
 
+        notification = create_notify(
+            to_user=self.request.user,
+            title=_("Team Join Request"),
+            description=_("{user} request to join team '{team}'").format(
+                user=request.user.full_name(),
+                team=team.name
+            ),
+            kwargs={
+                'team_name': team.name,
+                'type': 'TEAM_JOIN'
+            }
+        )
+
+        if notification.type == NotificationType.EMAIL:
+            dispatch_email_notification(notification)
+
         response_serializer = self.serializer_response({
             "message": text.success_team_request,
         })
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-
-    # TODO: Implement notification system > email
 
 
 class ResultJoinTeamView(ms.SwaggerViewMixin, APIView):
@@ -147,7 +182,21 @@ class ResultJoinTeamView(ms.SwaggerViewMixin, APIView):
         ser.save()
         accept_request(join_request)
 
-        # TODO: Implement notification system > email
+        notification = create_notify(
+            to_user=join_request.user,
+            title=_("Team Join Result"),
+            description=_("{user} your request to join team '{team}' has been resolved.").format(
+                user=join_request.user.full_name(),
+                team=join_request.team.name
+            ),
+            kwargs={
+                'team_name': join_request.team.name,
+                'type': 'TEAM_RESULT_JOIN'
+            }
+        )
+
+        if notification.type == NotificationType.EMAIL:
+            dispatch_email_notification(notification)
 
         return Response({"message": text.request_resolved}, status=status.HTTP_200_OK)
 
@@ -185,7 +234,22 @@ class TeamInvitationRequestView(ms.SwaggerViewMixin, APIView):
         validated_data["inviter"] = inviter
         ser.save()
 
-        # TODO: Implement notification system > email
+        notification = create_notify(
+            to_user=invitee,
+            title=_("Team Invitation"),
+            description=_("{user} invited you to join team '{team}'").format(
+                user=inviter.full_name(),
+                team=team.name
+            ),
+            kwargs={
+                'team_name': team.name,
+                'invitation_link': f"{settings.FRONTEND_URL}/teams/{team.id}/invitation",
+                'type': 'TEAM_INVITATION'
+            }
+        )
+
+        if notification.type == NotificationType.EMAIL:
+            dispatch_email_notification(notification)
 
         response_serializer = self.serializer_response({"message": text.success_team_request}).data
         return Response(response_serializer, status=status.HTTP_201_CREATED)
@@ -213,7 +277,21 @@ class ResultInvitationTeamView(ms.SwaggerViewMixin, APIView):
         if ser.validated_data.get("status") == STATUS_CHOICES.ACCEPTED:
             models.TeamMembership.objects.get_or_create(user=request.user, team=join_request.team)
 
-        # TODO: Implement notification system > email
+        notification = create_notify(
+            to_user=join_request.inviter,
+            title=_("Invitation Response"),
+            description=_("{user} has responded to your invitation for team '{team}'").format(
+                user=request.user.full_name(),
+                team=join_request.team.name
+            ),
+            kwargs={
+                'team_name': join_request.team.name,
+                'type': 'TEAM_RESULT_INVITATION'
+            }
+        )
+
+        if notification.type == NotificationType.EMAIL:
+            dispatch_email_notification(notification)
 
         return Response({"message": text.request_resolved}, status=status.HTTP_200_OK)
 
@@ -262,10 +340,27 @@ class RemoveTeamMemberView(ms.SwaggerViewMixin, mixins.DeleteViewMixin, APIView)
             raise exceptions.NotFoundTeam()
 
         is_team_member(self.request.user, team_membership.team)
+        removed_user = team_membership.user
+        team_name = team_membership.team.name
+
+        notification = create_notify(
+            to_user=removed_user,
+            title=_("Team Removal"),
+            description=_("You have been removed from team '{team}'").format(
+                team=team_name,
+                admin=self.request.user.full_name()
+            ),
+            kwargs={
+                'team_name': team_name,
+                'type': 'TEAM_REMOVE'
+            }
+        )
+
+        if notification.type == NotificationType.EMAIL:
+            dispatch_email_notification(notification)
 
         return team_membership
 
-        # TODO: Implement notification system > email
 
 
 

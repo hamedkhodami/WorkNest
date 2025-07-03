@@ -18,7 +18,6 @@ class EmailTeamNotificationHandler:
         context = {
             "user_name": email_notification.to_user.get_full_name(),
             "team_name": email_notification.kwargs.get('team_name'),
-            "invitation_link": email_notification.kwargs.get('invitation_link'),
         }
         send_email(subject, [recipient_email], context)
 

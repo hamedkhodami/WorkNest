@@ -1,42 +1,29 @@
-from apps.account.models import User
 from .models import Notification
-from .enums import NotificationType, NotificationStatus
+from .enums import NotificationType
 
 
-def create_notify_admins(n_type, title, description=None, kwargs=None, **kw):
+def create_notify(to_user, title, description=None, kwargs=None, n_type=None, **kw):
     """
-    Create a notification for all admins (super_user or operator_user).
+    Create a notification for a specific user, and auto-detect type if not provided.
     """
-    admins = User.base_objects.filter(role__in=['super_user', 'operator_user'])
-    notifications = []
-    for admin in admins:
-        notif = Notification(
-            type=n_type,
-            title=title,
-            description=description,
-            kwargs=kwargs,
-            user=admin,
-            email=admin.email,
-            phone_number=admin.phone_number,
-            **kw
-        )
-        notif.save()
-        notifications.append(notif)
-    return notifications
 
+    email = to_user.email
+    phone_number = to_user.phone_number
 
-def create_notify(n_type, user, title, description=None, kwargs=None, **kw):
-    """
-    Create a notification for a specific user.
-    """
+    if not n_type:
+        if email:
+            n_type = NotificationType.EMAIL
+        elif phone_number:
+            n_type = NotificationType.SMS
+        else:
+            n_type = NotificationType.IN_APP
+
     return Notification.objects.create(
         type=n_type,
         title=title,
         description=description,
         kwargs=kwargs,
-        user=user,
-        email=user.email,
-        phone_number=user.phone_number,
+        to_user=to_user,
         **kw
     )
 

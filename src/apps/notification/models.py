@@ -29,7 +29,7 @@ class Notification(BaseModel):
         verbose_name_plural = _('Notifications')
 
     def __str__(self):
-        return f"{self.type} notification for {self.user or self.email or self.phone_number}"
+        return f"{self.type} notification for {self.to_user or self.email or self.phone_number}"
 
     def get_title(self):
         return self.title or _('Notification')
