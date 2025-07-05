@@ -1,8 +1,4 @@
-# TODOs – Account App
 
-## Feature: 
-
-- [ ] change serializers profile
 
 
 # TODOs – LogBook App
