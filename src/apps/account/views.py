@@ -72,7 +72,7 @@ class LoginBasic(ms.SwaggerViewMixin, _TokenObtainPairView):
 class LoginOTP(APIView):
     """View to handle OTP-based authentication"""
 
-    parser_classes = (base_permissions.AllowAny,)
+    permission_classes = (base_permissions.AllowAny,)
 
     @swagger_auto_schema(
         tags=['Account'],
@@ -174,7 +174,7 @@ class Logout(ms.SwaggerViewMixin, APIView):
     """
     swagger_title = 'Logout'
     swagger_tags = ['Account']
-    serializer = serializers.RegisterSerializer
+    serializer = serializers.RefreshTokenSerializer
     serializer_response = serializers.MessageSerializer
 
     def post(self, request, *args, **kwargs):
@@ -529,8 +529,6 @@ class UserCreate(ms.SwaggerViewMixin, APIView):
 
         # create user
         user = ser.save()
-
-        # TODO: Implement notification system
 
         return Response(self.serializer_response(instance=user).data, status=status.HTTP_201_CREATED)
 

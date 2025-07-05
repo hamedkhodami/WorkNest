@@ -4,7 +4,7 @@ from apps.account.tests.factories import UserFactory
 
 
 @pytest.mark.django_db
-class PermissionTest:
+class TestPermission:
     def test_is_admin_permission(self):
         admin = UserFactory(role="admin")
         viewer = UserFactory(role="viewer")

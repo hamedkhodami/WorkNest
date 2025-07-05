@@ -38,7 +38,7 @@ class CustomQuerySet(models.QuerySet):
 class CustomObjectsManager(BaseUserManager):
     _queryset_class = CustomQuerySet
 
-    def create_user(self, phone_number, password, role, email=None, **extra_fields):
+    def create_user(self, phone_number, password, role=UserRoleEnum.VIEWER, email=None, **extra_fields):
         if not phone_number:
             raise ValueError(text.required_phone_number)
         user = self.model(phone_number=phone_number, role=role, email=email, **extra_fields)

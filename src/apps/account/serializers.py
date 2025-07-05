@@ -11,6 +11,24 @@ class MessageSerializer(serializers.Serializer):
     message = serializers.CharField()
 
 
+class AccessTokenSerializer(serializers.Serializer):
+    access = serializers.CharField()
+
+
+class TokenResponseSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+    access = serializers.CharField()
+    user_role = serializers.CharField()
+
+
+class PhoneNumberSerializer(serializers.Serializer):
+    phone_number = PhoneNumberField(region='IR')
+
+
+class LoginOTPSerializer(PhoneNumberSerializer, serializers.Serializer):
+    code = serializers.CharField()
+
+
 class RegisterSerializer(serializers.ModelSerializer):
 
     referral = serializers.CharField(max_length=8, required=False)
@@ -19,7 +37,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = (
-            'phone_number','email','first_name','last_name','role','national_id'
+            'phone_number', 'email', 'first_name', 'last_name', 'role', 'national_id',
+            'otp_code', 'referral'
         )
 
     def validate_national_id(self, national_id):
@@ -57,26 +76,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class TokenResponseSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
-    access = serializers.CharField()
-    user_role = serializers.CharField()
-
-
 class RefreshTokenSerializer(serializers.Serializer):
     refresh = serializers.CharField()
-
-
-class AccessTokenSerializer(serializers.Serializer):
-    access = serializers.CharField()
-
-
-class PhoneNumberSerializer(serializers.Serializer):
-    phone_number = PhoneNumberField(region='IR')
-
-
-class LoginOTPSerializer(PhoneNumberSerializer, serializers.Serializer):
-    code = serializers.CharField()
 
 
 class ConfirmPhoneNumberSerializer(serializers.Serializer):
@@ -124,19 +125,6 @@ class UserCreateResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = ('id', 'created_at')
-
-
-class UserListDataResponseSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(UserRoleEnum)
-    is_blocked = serializers.SerializerMethodField()
-
-    def get_is_blocked(self, user):
-        return user.is_blocked
-
-    class Meta:
-        model = models.User
-        fields = ('id', 'created_at', 'updated_at',
-                  'first_name', 'last_name', 'phone_number', 'is_active', 'role', 'is_blocked')
 
 
 class UserDeleteSerializer(serializers.ModelSerializer):

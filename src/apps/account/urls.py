@@ -6,11 +6,12 @@ app_name = 'apps.account'
 
 
 urlpatterns = [
+    path('token/refresh/', views.TokenRefresh.as_view(), name='token_refresh'),
     path('token/basic', views.LoginBasic.as_view(), name='token_obtain_pair_basic'),
     path('token/otp', views.LoginOTP.as_view(), name='token_obtain_pair_otp'),
-    path('token/refresh/', views.TokenRefresh.as_view(), name='token_refresh'),
 
     path('logout', views.Logout.as_view(), name='logout'),
+
     path('register', views.Register.as_view(), name='register'),
     path('reset-password', views.ResetPassword.as_view(), name='reset_password__send_code'),
     path('reset-password/check-code-and-set', views.ResetPasswordCheckAndSet.as_view(),

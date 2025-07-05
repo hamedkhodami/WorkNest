@@ -2,10 +2,7 @@
 
 ## Feature: 
 
-- [ ] Add notification
 - [ ] change serializers profile
-- [ ] role in model
-- [ ] role owner
 
 
 # TODOs – LogBook App

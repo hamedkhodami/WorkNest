@@ -105,7 +105,7 @@ class IsOwnerOrAdmin(BasePermissionAnyCustom):
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated or request.user.is_blocked:
             return False
-        if IsAdminOrProjectAdmin().has_permission(request, view):
+        if IsAdmin().has_permission(request, view):
             return True
         return obj.user == request.user
 
