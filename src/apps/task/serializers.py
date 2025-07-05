@@ -105,7 +105,7 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ("task_list", "assignee")
 
 
-class TaskUpdateResponseSerializers(serializers.ModelSerializer):
+class TaskUpdateResponseSerializers(serializers.Serializer):
     """
         serializer response to update task
     """

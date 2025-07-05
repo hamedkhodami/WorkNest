@@ -28,7 +28,7 @@ urlpatterns = [
          name='user_profile_confirm_phone_number'),
 
     path('list/', views.ProfileListView.as_view(), name='profile-list'),
-    path('<int:pk>/', views.ProfileDetailView.as_view(), name='profile-detail'),
+    path('<int:pk>/detail/', views.ProfileDetailView.as_view(), name='profile-detail'),
     path('<int:pk>/update/', views.ProfileUpdateView.as_view(), name='profile-update'),
 
 ]

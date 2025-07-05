@@ -153,11 +153,6 @@ class UserProfileModel(BaseModel):
     def __str__(self):
         return f'{self.user}'
 
-    def get_profile_picture_url(self):
-        if self.image:
-            return self.image.url
-        return ".../static/images/default/profile.jpg"
-
 
 class UserBlock(BaseModel):
     user = models.OneToOneField('User', on_delete=models.CASCADE, related_name='userblock')

@@ -96,7 +96,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ('phone_number', 'email', 'first_name', 'last_name', 'role', 'national_id')
+        fields = ('phone_number', 'email', 'first_name', 'last_name', 'role', 'national_id', 'otp_code')
 
     def create(self, validated_data):
         validated_data = validated_data.copy()
@@ -133,9 +133,6 @@ class UserDeleteSerializer(serializers.ModelSerializer):
         fields = ('id',)
 
 
-#---------------------------------------------------------------------------
-
-
 class UserBlockSwaggerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.UserBlock
@@ -160,14 +157,18 @@ class UserBlockDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
-#---------------------------------------------------------------------------
-
-
 class UserProfileSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = models.UserProfileModel
         fields = '__all__'
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        if obj.image and hasattr(obj.image, 'url'):
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+        return None
 
 
 class UserProfileListResponseSerializer(serializers.Serializer):
@@ -176,9 +177,17 @@ class UserProfileListResponseSerializer(serializers.Serializer):
 
 
 class UserProfileDetailSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = models.UserProfileModel
         fields = '__all__'
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        if obj.image and hasattr(obj.image, 'url'):
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+        return None
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

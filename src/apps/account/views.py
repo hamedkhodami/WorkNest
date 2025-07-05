@@ -632,7 +632,7 @@ class ProfileListView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
         profile user list
     """
     permission_classes = (base_permissions.AllowAny,)
-    swagger_tags = ['Account']
+    swagger_tags = ['Profile']
     swagger_title = 'ListProfiles'
     serializer = serializers.UserProfileSerializer
     serializer_response = serializers.UserProfileListResponseSerializer
@@ -655,7 +655,7 @@ class ProfileDetailView(ms.SwaggerViewMixin, mixins.DetailViewMixin, APIView):
         profile user  detail
     """
     permission_classes = (base_permissions.AllowAny,)
-    swagger_tags = ['Account']
+    swagger_tags = ['Profile']
     swagger_title = 'ProfileDetail'
     serializer = serializers.UserProfileDetailSerializer
     serializer_response = serializers.UserProfileDetailResponseSerializer
