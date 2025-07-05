@@ -16,11 +16,10 @@ class NotificationListView(ms.SwaggerViewMixin, mixins.ListViewMixin, APIView):
     swagger_tags = ['Notification']
     permission_classes = [permissions.IsAuthenticated]
 
-    serializer = serializers.NotificationSerializer
     serializer_response = serializers.NotificationResponseSerializer
 
     def get_queryset(self):
-        return models.Notification.objects.filter(user=self.request.user).order_by('-created_at')
+        return models.Notification.objects.filter(to_user=self.request.user).order_by('-created_at')
 
     def get(self, request, *args, **kwargs):
         response_data = self.list(request)

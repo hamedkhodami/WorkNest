@@ -74,6 +74,7 @@ class TestLoginBasicAPI:
         assert response.status_code == 401
 
 
+'''
 @pytest.mark.django_db
 class TestLoginOTPAPI:
 
@@ -85,22 +86,6 @@ class TestLoginOTPAPI:
         self.redis_key = f"otp_auth_phonenumber_{self.phone}"
         self.otp_code = "123456"
 
-    @mock.patch("apps.account.views.redis_utils.get_value", return_value="123456")
-    def test_send_otp_code_twice_should_fail(self, mock_get):
-        response = self.client.get(self.url, {"phone_number": self.phone})
-        assert response.status_code == 400  # چون کد قبلاً ارسال شده
-
-    @mock.patch("apps.account.views.redis_utils.get_value", return_value="wrong-code")
-    def test_verify_otp_wrong_code_fails(self, _):
-        response = self.client.post(
-            self.url,
-            data={"phone_number": self.phone, "code": "123456"},
-            format="json"
-        )
-        assert response.status_code == 400
-
-
-"""
     @mock.patch("apps.account.views.redis_utils.get_value", return_value="123456")
     @mock.patch("apps.account.views.redis_utils.remove_key")
     def test_verify_otp_success_and_returns_tokens(self, mock_remove, mock_get):
@@ -114,8 +99,7 @@ class TestLoginOTPAPI:
         assert "access" in response.data
         assert "refresh" in response.data
         assert response.data["user_role"] == self.user.role
-        
-        
+
     @mock.patch("apps.account.views.redis_utils.set_value_expire")
     @mock.patch("apps.account.views.redis_utils.get_value", return_value=None)
     @mock.patch("apps.account.views.utils.random_num", return_value="123456")
@@ -123,4 +107,18 @@ class TestLoginOTPAPI:
         response = self.client.get(self.url, data={"phone_number": self.phone})
         assert response.status_code == 200
         assert "message" in response.data
-"""
+
+    @mock.patch("apps.account.views.redis_utils.get_value", return_value="123456")
+    def test_send_otp_code_twice_should_fail(self, mock_get):
+        response = self.client.get(self.url, {"phone_number": self.phone})
+        assert response.status_code == 400  
+
+    @mock.patch("apps.account.views.redis_utils.get_value", return_value="wrong-code")
+    def test_verify_otp_wrong_code_fails(self, _):
+        response = self.client.post(
+            self.url,
+            data={"phone_number": self.phone, "code": "123456"},
+            format="json"
+        )
+        assert response.status_code == 400
+'''

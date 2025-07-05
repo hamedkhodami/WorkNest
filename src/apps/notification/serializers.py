@@ -19,11 +19,9 @@ class NotificationSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'is_visited',
-            'retry_count',
             'sent_at',
             'created_at',
         ]
-        read_only_fields = ('is_visited', 'retry_count', 'sent_at', 'created_at')
 
 
 class NotificationResponseSerializer(serializers.Serializer):
