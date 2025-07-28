@@ -39,7 +39,7 @@ class BoardsTeamsView(ms.SwaggerViewMixin, APIView):
     """
 
     swagger_title = 'boards Team'
-    swagger_tags = ['board']
+    swagger_tags = ['Board']
     serializer_class = serializers.BoardListSerializer
     permission_classes = (per.IsTeamUser,)
 
