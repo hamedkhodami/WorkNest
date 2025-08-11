@@ -1,0 +1,40 @@
+# --- Python ---
+pycache/
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# --- Environment ---
+.env
+.env.*
+
+# --- IDE files ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- ssl key ---
+*.pem
+*.key
+
+# --- Git ---
+.git/
+.gitignore
+
+# --- Tests and Coverage ---
+tests/
+coverage/
+htmlcov/
+.pytest_cache/
+*.cover
+*.coverage
+
+# --- Docker (non-prod files) ---
+Dockerfile.dev
+docker-compose.override.yml
