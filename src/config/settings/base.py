@@ -62,6 +62,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -70,7 +71,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+# ----------------------------------------------------------------
 
+
+# ---TEMPLATES----------------------------------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -90,7 +94,7 @@ TEMPLATES = [
 # ----------------------------------------------------------------
 
 
-# ---WSGI---------------------------------------------------------
+# ---ASGI---------------------------------------------------------
 ASGI_APPLICATION = 'config.asgi.application'
 # ----------------------------------------------------------------
 
@@ -137,7 +141,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.getenv('STATIC_ROOT')
 
 STATICFILES_DIRS = [
-   os.getenv('STATICFILES_DIRS', BASE_DIR / 'static/assets/'),
+    BASE_DIR / os.getenv('STATICFILES_DIRS', 'static/assets'),
 ]
 # ----------------------------------------------------------------
 
@@ -270,12 +274,10 @@ REST_FRAMEWORK = {
 
 
 # ---JWT---------------------------------------------------------
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=40),  # TODO: must change in production(just use in development)
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=20),
+DEFAULT_JWT_CONFIG = {
     "AUTH_HEADER_TYPES": ("Bearer",),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True
 }
 # ---------------------------------------------------------------
 
@@ -284,7 +286,7 @@ SIMPLE_JWT = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+        "LOCATION": os.getenv("REDIS_CACHE_LOCATION", "redis://127.0.0.1:6379")
     }
 }
 # ---------------------------------------------------------------
