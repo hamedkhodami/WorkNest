@@ -1,4 +1,5 @@
-
+# TODO
+pip install django-cors-headers
 
 
 # TODOs – LogBook App

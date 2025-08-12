@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'phonenumber_field',
     'rosetta',
+    'corsheaders',
 
     # apps
     'apps.core.apps.CoreConfig',
